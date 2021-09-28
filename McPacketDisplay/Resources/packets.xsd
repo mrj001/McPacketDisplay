@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema version="1.0"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+   elementFormDefault="unqualified">
+
+  <xs:simpleType name="FieldDataType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="byte" />
+      <xs:enumeration value="short" />
+      <xs:enumeration value="int" />
+      <xs:enumeration value="long" />
+      <xs:enumeration value="float" />
+      <xs:enumeration value="double" />
+      <xs:enumeration value="string8" />
+      <xs:enumeration value="string16" />
+      <xs:enumeration value="bool" />
+      <xs:enumeration value="metadata" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DirectionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="server" />
+      <xs:enumeration value="client" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PacketIDType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9A-F][0-9A-F]"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+   <xs:complexType name="FieldType">
+      <xs:sequence>
+         <xs:element name="name" type="xs:string" />
+         <xs:element name="type" type="FieldDataType" />
+      </xs:sequence>
+   </xs:complexType>
+
+   <xs:complexType name="FieldListType">
+      <xs:sequence>
+        <xs:element name="field" type="FieldType" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+   </xs:complexType>
+
+  <xs:element name="packet">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="from" type="DirectionType" />
+        <xs:element name="id" type="PacketIDType" />
+        <xs:element name="fields" type="FieldListType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
