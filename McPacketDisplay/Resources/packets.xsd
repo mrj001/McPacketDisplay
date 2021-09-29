@@ -6,7 +6,9 @@
   <xs:simpleType name="FieldDataType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="byte" />
+      <xs:enumeration value="byte[]" />
       <xs:enumeration value="short" />
+      <xs:enumeration value="short[]" />
       <xs:enumeration value="int" />
       <xs:enumeration value="long" />
       <xs:enumeration value="float" />
@@ -27,7 +29,7 @@
 
   <xs:simpleType name="PacketIDType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[0-9A-F][0-9A-F]"/>
+      <xs:pattern value="[0-9A-Fa-f][0-9A-Fa-f]"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -44,12 +46,19 @@
       </xs:sequence>
    </xs:complexType>
 
-  <xs:element name="packet">
+  <xs:complexType name="PacketType">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="from" type="DirectionType" />
+      <xs:element name="id" type="PacketIDType" />
+      <xs:element name="fields" type="FieldListType" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="packets">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="from" type="DirectionType" />
-        <xs:element name="id" type="PacketIDType" />
-        <xs:element name="fields" type="FieldListType" />
+        <xs:element name="packet" type="PacketType" minOccurs="1" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
