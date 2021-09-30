@@ -23,4 +23,9 @@
     <ProjectReference Include="..\McPacketDisplay\McPacketDisplay.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Files\*.pcap">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
