@@ -1,26 +1,10 @@
 ﻿using System;
 using System.Xml;
 
-namespace McPacketDisplay.Models
+namespace McPacketDisplay.Models.Packets
 {
    public class FieldDefinition
    {
-      public enum FieldDataType
-      {
-            Byte,
-            ByteArray,
-            Short,
-            ShortArray,
-            Integer,
-            Long,
-            Float,
-            Double,
-            String8,
-            String16,
-            Bool,
-            Metadata
-      }
-
       public FieldDefinition(XmlNode node)
       {
          if (node.Name != "field")

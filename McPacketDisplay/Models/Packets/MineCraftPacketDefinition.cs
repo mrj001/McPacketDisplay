@@ -2,23 +2,10 @@
 using System.Collections.Generic;
 using System.Xml;
 
-namespace McPacketDisplay.Models
+namespace McPacketDisplay.Models.Packets
 {
    public class MineCraftPacketDefinition
    {
-      /// <summary>
-      /// Specifies the source of a MineCraft Packet.
-      /// </summary>
-      /// <remarks>
-      /// The values in this enum correspond to the values listed in
-      /// DirectionType in packets.xsd.
-      /// </remarks>
-      public enum Source
-      {
-         Server,
-         Client
-      }
-
       private List<FieldDefinition> _fields;
 
       /// <summary>
@@ -37,11 +24,11 @@ namespace McPacketDisplay.Models
          switch(fromNode.InnerText)
          {
             case "server":
-               From = Source.Server;
+               From = PacketSource.Server;
                break;
 
             case "client":
-               From = Source.Client;
+               From = PacketSource.Client;
                break;
 
             default:
@@ -69,7 +56,7 @@ namespace McPacketDisplay.Models
       /// <summary>
       /// Gets the Source (sender) of the MineCraft Packet defined by this object.
       /// </summary>
-      public Source From { get; }
+      public PacketSource From { get; }
 
       /// <summary>
       /// Gets the Name of the MineCraft Packet defined by this object.

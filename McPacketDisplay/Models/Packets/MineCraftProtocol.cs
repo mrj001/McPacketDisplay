@@ -2,9 +2,9 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 
-namespace McPacketDisplay.Models
+namespace McPacketDisplay.Models.Packets
 {
-   public class MineCraftProtocol
+   public class MineCraftProtocol : IMineCraftProtocol
    {
       private string _minecraftVersion = "Beta 1.7.3";
 
