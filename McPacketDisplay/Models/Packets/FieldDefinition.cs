@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace McPacketDisplay.Models.Packets
 {
-   public class FieldDefinition
+   public class FieldDefinition : IFieldDefinition
    {
       public FieldDefinition(XmlNode node)
       {
@@ -65,7 +65,5 @@ namespace McPacketDisplay.Models.Packets
       public string Name { get; }
 
       public FieldDataType FieldType { get; }
-
-      // TODO Add code to parse Field values from a byte stream
    }
 }
