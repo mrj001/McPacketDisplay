@@ -1,6 +1,6 @@
 using System;
 using System.Xml;
-using McPacketDisplay.Models;
+using McPacketDisplay.Models.Packets;
 using Xunit;
 
 namespace Test.Models

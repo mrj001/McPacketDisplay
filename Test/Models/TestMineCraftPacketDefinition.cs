@@ -1,31 +1,32 @@
 ﻿using System;
 using System.Xml;
 using McPacketDisplay.Models;
+using McPacketDisplay.Models.Packets;
 using Xunit;
 
 namespace Test.Models
 {
    public class TestMineCraftPacketDefinition
    {
-      public static TheoryData<int, MineCraftPacketDefinition.Source, string, string[],FieldDefinition.FieldDataType[], string> ctor_TestData
+      public static TheoryData<int, PacketSource, string, string[],FieldDataType[], string> ctor_TestData
       {
          get
          {
-            var rv = new TheoryData<int, MineCraftPacketDefinition.Source, string, string[], FieldDefinition.FieldDataType[], string>();
+            var rv = new TheoryData<int, PacketSource, string, string[], FieldDataType[], string>();
 
-            rv.Add(10, MineCraftPacketDefinition.Source.Client, "PlayerGroundedPacket",
+            rv.Add(10, PacketSource.Client, "PlayerGroundedPacket",
                new string[] { "OnGround" },
-               new FieldDefinition.FieldDataType[] { FieldDefinition.FieldDataType.Bool },
+               new FieldDataType[] { FieldDataType.Bool },
                "<packet><name>PlayerGroundedPacket</name><from>client</from><id>0a</id><fields><field><name>OnGround</name><type>bool</type></field></fields></packet>");
 
-            rv.Add(0, MineCraftPacketDefinition.Source.Client, "KeepAlivePacket",
-               Array.Empty<string>(), Array.Empty<FieldDefinition.FieldDataType>(),
+            rv.Add(0, PacketSource.Client, "KeepAlivePacket",
+               Array.Empty<string>(), Array.Empty<FieldDataType>(),
                "<packet><name>KeepAlivePacket</name><from>client</from><id>00</id><fields></fields></packet>");
 
             rv.Add(0x6a,
-               MineCraftPacketDefinition.Source.Server, "TransactionStatusPacket",
+               PacketSource.Server, "TransactionStatusPacket",
                new string[] { "WindowID", "ActionNumber", "Accepted" },
-               new FieldDefinition.FieldDataType[] { FieldDefinition.FieldDataType.Byte, FieldDefinition.FieldDataType.Short, FieldDefinition.FieldDataType.Bool },
+               new FieldDataType[] { FieldDataType.Byte, FieldDataType.Short, FieldDataType.Bool },
                "<packet><name>TransactionStatusPacket</name><from>server</from><id>6a</id><fields><field><name>WindowID</name><type>byte</type></field><field><name>ActionNumber</name><type>short</type></field><field><name>Accepted</name><type>bool</type></field></fields></packet>");
 
             return rv;
@@ -34,9 +35,9 @@ namespace Test.Models
 
       [Theory]
       [MemberData(nameof(ctor_TestData))]
-      public void ctor(int expectedId, MineCraftPacketDefinition.Source expectedSource,
+      public void ctor(int expectedId, PacketSource expectedSource,
          string expectedName, string[] expectedFieldNames,
-         FieldDefinition.FieldDataType[] expectedFieldDataTypes,
+         FieldDataType[] expectedFieldDataTypes,
          string xml)
       {
          XmlDocument doc = new XmlDocument();
