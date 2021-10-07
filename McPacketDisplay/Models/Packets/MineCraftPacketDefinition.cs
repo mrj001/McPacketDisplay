@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace McPacketDisplay.Models.Packets
 {
-   public class MineCraftPacketDefinition
+   public class MineCraftPacketDefinition : IMineCraftPacketDefinition
    {
       private List<FieldDefinition> _fields;
 
@@ -76,8 +76,6 @@ namespace McPacketDisplay.Models.Packets
          }
       }
 
-
-      // TODO add method to parse the defined MineCraft Packet from a BinaryReader
-
+      public int Count { get => _fields.Count; }
    }
 }
