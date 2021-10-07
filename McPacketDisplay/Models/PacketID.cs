@@ -20,6 +20,11 @@ namespace McPacketDisplay.Models
          _id = n;
       }
 
+      public PacketID(int id)
+      {
+         _id = id;
+      }
+
       /// <summary>
       /// Gets the value of the MineCraft Packet ID.
       /// </summary>

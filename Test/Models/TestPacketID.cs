@@ -31,6 +31,15 @@ namespace Test.Models
          Assert.Equal(expectedID, actual.ID);
       }
 
+      [Fact]
+      public void ctor_Int()
+      {
+         int id = 5;
+         PacketID actual = new PacketID(id);
+
+         Assert.Equal(id, actual.ID);
+      }
+
       public static TheoryData<string, string> ToString_TestData
       {
          get
