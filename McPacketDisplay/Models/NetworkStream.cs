@@ -5,7 +5,7 @@ using PacketDotNet;
 
 namespace McPacketDisplay.Models
 {
-   internal class NetworkStream : Stream
+   public class NetworkStream : Stream
    {
       private readonly IEnumerator<TcpPacket> _packets;
 

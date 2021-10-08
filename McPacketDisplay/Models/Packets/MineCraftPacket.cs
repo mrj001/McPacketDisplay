@@ -43,12 +43,12 @@ namespace McPacketDisplay.Models.Packets
       /// </summary>
       /// <param name="protocol"></param>
       /// <param name="strm"></param>
-      /// <returns></returns>
+      /// <returns>An IMineCraftPacket or null if the end of the stream has been reached.</returns>
       public static IMineCraftPacket GetPacket(IMineCraftProtocol protocol, Stream strm)
       {
          int n = strm.ReadByte();
          if (n < 0)
-            throw new EndOfStreamException();
+            return null;
          PacketID packetID = new PacketID(n);
 
          int j = 0;
