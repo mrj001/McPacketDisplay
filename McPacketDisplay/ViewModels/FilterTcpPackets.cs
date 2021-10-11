@@ -2,11 +2,12 @@
 using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
+using ReactiveUI;
 using PacketDotNet;
 
 namespace McPacketDisplay.ViewModels
 {
-   public class FilterTcpPackets : IFilterTcpPackets, INotifyPropertyChanged
+   public class FilterTcpPackets : ViewModelBase, IFilterTcpPackets
    {
       private IPAddress _serverAddress;
       private bool _applyServerAddressFilter;
@@ -40,112 +41,56 @@ namespace McPacketDisplay.ViewModels
       public IPAddress ServerAddress
       {
          get => _serverAddress;
-         set
-         {
-            if (value?.Equals(_serverAddress) ?? _serverAddress is null)
-               return;
-
-            _serverAddress = value!;
-            OnPropertyChanged();
-         }
+         set => this.RaiseAndSetIfChanged(ref _serverAddress, value);
       }
 
       /// <inheritdoc />
       public bool ApplyServerAddressFilter
       {
          get => _applyServerAddressFilter;
-         set
-         {
-            if (_applyServerAddressFilter == value)
-               return;
-
-            _applyServerAddressFilter = value;
-            OnPropertyChanged();
-         }
+         set => this.RaiseAndSetIfChanged(ref _applyServerAddressFilter, value);
       }
 
       /// <inheritdoc />
       public ushort ServerPort
       {
          get => _serverPort;
-         set
-         {
-            if (_serverPort == value)
-               return;
-
-            _serverPort = value;
-            OnPropertyChanged();
-         }
+         set => this.RaiseAndSetIfChanged(ref _serverPort, value);
       }
 
       /// <inheritdoc />
       public bool ApplyServerPortFilter
       {
          get => _applyServerPortFilter;
-         set
-         {
-            if (_applyServerPortFilter == value)
-               return;
-
-            _applyServerPortFilter = value;
-            OnPropertyChanged();
-         }
+         set => this.RaiseAndSetIfChanged(ref _applyServerPortFilter, value);
       }
 
       /// <inheritdoc />
       public IPAddress ClientAddress
       {
          get => _clientAddress;
-         set
-         {
-            if (value?.Equals(_clientAddress) ?? _clientAddress is null)
-               return;
-
-            _clientAddress = value!;
-            OnPropertyChanged();
-         }
+         set => this.RaiseAndSetIfChanged(ref _clientAddress, value);
       }
 
       /// <inheritdoc />
       public bool ApplyClientAddressFilter
       {
          get => _applyClientAddressFilter;
-         set
-         {
-            if (_applyClientAddressFilter == value)
-               return;
-
-            _applyClientAddressFilter = value;
-            OnPropertyChanged();
-         }
+         set => this.RaiseAndSetIfChanged(ref _applyClientAddressFilter, value);
       }
 
       /// <inheritdoc />
       public ushort ClientPort
       {
          get => _clientPort;
-         set
-         {
-            if (_clientPort == value)
-               return;
-
-            _clientPort = value;
-            OnPropertyChanged();
-         }
+         set => this.RaiseAndSetIfChanged(ref _clientPort, value);
       }
 
       /// <inheritdoc />
       public bool ApplyClientPortFilter
       {
          get => _applyClientPortFilter;
-         set
-         {
-            if (_applyClientPortFilter == value)
-               return;
-
-            _applyClientPortFilter = value;
-            OnPropertyChanged();
-         }
+         set => this.RaiseAndSetIfChanged(ref _applyClientPortFilter, value);
       }
 
       /// <inheritdoc />
@@ -201,15 +146,6 @@ namespace McPacketDisplay.ViewModels
          }
       }
 
-      #endregion
-
-      #region INotifyPropertyChanged
-      public event PropertyChangedEventHandler? PropertyChanged;
-
-      protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = "")
-      {
-         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-      }
       #endregion
    }
 }

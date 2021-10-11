@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:McPacketDisplay.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="McPacketDisplay.Views.TcpFilterControl">
+  <Border Margin="1" Padding="1" BorderThickness="1" BorderBrush="Black">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="10" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <Grid.Resources>
+        <local:IPAddressConverter x:Key="IPConverter" />
+        <local:PortNumberConverter x:Key="PortConverter" />
+      </Grid.Resources>
+
+      <Grid.Styles>
+        <Style Selector="TextBox">
+          <Setter Property="Margin" Value="0,2" />
+        </Style>
+        <Style Selector="TextBlock">
+          <Setter Property="VerticalAlignment" Value="Center" />
+          <Setter Property="HorizontalAlignment" Value="Right" />
+          <Setter Property="Margin" Value="0,0,2,0" />
+        </Style>
+      </Grid.Styles>
+
+      <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+         Filters to select TCP Packets
+      </TextBlock>
+
+      <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding ApplyServerAddressFilter}" />
+      <TextBlock Grid.Row="1" Grid.Column="2">
+         Server Address:
+      </TextBlock>
+      <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ServerAddress, Converter={StaticResource IPConverter}}" />
+
+      <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ApplyServerPortFilter}}" />
+      <TextBlock Grid.Row="2" Grid.Column="2">
+         Server Port:
+      </TextBlock>
+      <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding ServerPort, Converter={StaticResource PortConverter}}" />
+
+      <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding ApplyClientAddressFilter}" />
+      <TextBlock Grid.Row="3" Grid.Column="2">
+         Client Address:
+      </TextBlock>
+      <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding ClientAddress, Converter={StaticResource IPConverter}}" />
+
+      <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ApplyClientPortFilter}" />
+      <TextBlock Grid.Row="4" Grid.Column="2">
+         Client Port:
+      </TextBlock>
+      <TextBox Grid.Row="4" Grid.Column="3" Text="{Binding ClientPort, Converter={StaticResource PortConverter}}" />
+    </Grid>
+  </Border>
+</UserControl>
