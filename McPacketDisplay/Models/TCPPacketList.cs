@@ -11,6 +11,11 @@ namespace McPacketDisplay.Models
    {
       private readonly List<TcpPacket> _lst;
 #region Construction
+      private TcpPacketList()
+      {
+         _lst = new List<TcpPacket>(1);
+      }
+
       private TcpPacketList(List<TcpPacket> lst)
       {
          _lst = lst;
@@ -18,6 +23,9 @@ namespace McPacketDisplay.Models
 
       public static TcpPacketList GetList(string filename)
       {
+         if (string.IsNullOrEmpty(filename))
+            return new TcpPacketList();
+
          Factory factory = new Factory();
          return factory.GetPacketList(filename);
       }

@@ -14,5 +14,13 @@ namespace Test.Models
 
          Assert.Equal(4, actual.Count());
       }
+
+      [Fact]
+      public void Factory_EmptyString()
+      {
+         TcpPacketList actual = TcpPacketList.GetList(String.Empty);
+
+         Assert.Equal(0, actual.Count());
+      }
    }
 }
