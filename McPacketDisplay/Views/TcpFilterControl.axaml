@@ -37,7 +37,7 @@
         </Style>
       </Grid.Styles>
 
-      <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+      <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" FontWeight="Bold">
          Filters to select TCP Packets
       </TextBlock>
 
