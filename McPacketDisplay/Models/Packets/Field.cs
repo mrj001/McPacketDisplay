@@ -104,14 +104,14 @@ namespace McPacketDisplay.Models.Packets
 
    public class ByteField : Field
    {
-      private readonly byte _value;
+      private readonly sbyte _value;
       internal ByteField(string name, Stream strm) : base(name)
       {
          int value = strm.ReadByte();
          if (value < 0)
             throw new EndOfStreamException();
 
-         _value = (byte)value;
+         _value = (sbyte)value;
       }
 
       public override object Value { get => _value; }
