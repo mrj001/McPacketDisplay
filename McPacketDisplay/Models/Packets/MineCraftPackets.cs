@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using PacketDotNet;
 
 namespace McPacketDisplay.Models.Packets
 {
@@ -23,6 +24,12 @@ namespace McPacketDisplay.Models.Packets
       public static MineCraftPackets GetPackets(IMineCraftProtocol protocol, string filename)
       {
          TcpPacketList tcpPackets = TcpPacketList.GetList(filename);
+         using (NetworkStream strm = new NetworkStream(tcpPackets))
+            return new MineCraftPackets(protocol, strm);
+      }
+
+      public static MineCraftPackets GetPackets(IMineCraftProtocol protocol, IEnumerable<TcpPacket> tcpPackets)
+      {
          using (NetworkStream strm = new NetworkStream(tcpPackets))
             return new MineCraftPackets(protocol, strm);
       }

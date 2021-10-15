@@ -14,8 +14,20 @@
     </Design.DataContext>
 
     <DockPanel LastChildFill="True">
+      <Menu DockPanel.Dock="Top">
+        <MenuItem Header="_File">
+          <MenuItem Header="_Open..." Command="{Binding OpenCommand}" />
+          <Separator />
+          <MenuItem Header="_Quit" />
+        </MenuItem>
+      </Menu>
+
       <vw:TcpFilterControl DockPanel.Dock="Top" DataContext="{Binding TcpFilter}">
       </vw:TcpFilterControl>
+
+      <StackPanel DockPanel.Dock="Top">
+         <TextBlock>TODO: MineCraft Packet Filters</TextBlock>
+      </StackPanel>
 
       <Border>
         <ListBox>

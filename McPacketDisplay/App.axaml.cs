@@ -6,24 +6,23 @@ using McPacketDisplay.Views;
 
 namespace McPacketDisplay
 {
-    public class App : Application
-    {
-        public override void Initialize()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+   public class App : Application
+   {
+      public override void Initialize()
+      {
+         AvaloniaXamlLoader.Load(this);
+      }
 
-        public override void OnFrameworkInitializationCompleted()
-        {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = new MainWindowViewModel(),
-                };
-            }
+      public override void OnFrameworkInitializationCompleted()
+      {
+         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+         {
+            desktop.MainWindow = new MainWindow();
+            IDialogService dialogService = new DialogService(desktop.MainWindow);
+            desktop.MainWindow.DataContext = new MainWindowViewModel(dialogService);
+         }
 
-            base.OnFrameworkInitializationCompleted();
-        }
-    }
+         base.OnFrameworkInitializationCompleted();
+      }
+   }
 }
