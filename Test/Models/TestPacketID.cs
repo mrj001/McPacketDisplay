@@ -124,5 +124,41 @@ namespace Test.Models
 
          Assert.False(id.Equals("invalid cast"));
       }
+
+      public static TheoryData<bool, int, int> Equals_Int_TestData
+      {
+         get
+         {
+            var rv = new TheoryData<bool, int, int>();
+
+            rv.Add(true, 42, 42);
+            rv.Add(false, 17, 19);
+
+            return rv;
+         }
+      }
+
+      [Theory]
+      [MemberData(nameof(Equals_Int_TestData))]
+      public void Equals_Int_Test(bool expected, int id, int packetID)
+      {
+         PacketID testid = new PacketID(packetID);
+
+         if (expected)
+         {
+            Assert.True(testid.Equals(id));
+            Assert.True(testid.Equals((object)id));
+         }
+         else
+         {
+            Assert.False(testid.Equals(id));
+            Assert.False(testid.Equals((object)id));
+         }
+
+         Assert.Equal(expected, id == testid);
+         Assert.NotEqual(expected, id != testid);
+         Assert.Equal(expected, testid == id);
+         Assert.NotEqual(expected, testid != id);
+      }
    }
 }

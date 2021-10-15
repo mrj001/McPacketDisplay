@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace McPacketDisplay.Models
 {
-   public class PacketID : IEquatable<PacketID>
+   public class PacketID : IEquatable<PacketID>, IEquatable<int>
    {
       private readonly int _id;
 
@@ -37,6 +37,9 @@ namespace McPacketDisplay.Models
 
       public override bool Equals(object? obj)
       {
+         if (obj is int)
+            return Equals((int)obj);
+
          return Equals(obj as PacketID);
       }
 
@@ -61,6 +64,31 @@ namespace McPacketDisplay.Models
       public static bool operator !=(PacketID l, PacketID r)
       {
          return !(l == r);
+      }
+
+      public bool Equals(int other)
+      {
+         return _id == other;
+      }
+
+      public static bool operator==(int l, PacketID r)
+      {
+         return r?.Equals(l) ?? false;
+      }
+      
+      public static bool operator !=(int l, PacketID r)
+      {
+         return !(l == r);
+      }
+
+      public static bool operator==(PacketID l, int r)
+      {
+         return (r == l);
+      }
+
+      public static bool operator!=(PacketID l, int r)
+      {
+         return !(r == l);
       }
    }
 }
