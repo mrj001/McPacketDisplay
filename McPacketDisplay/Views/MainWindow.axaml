@@ -29,8 +29,47 @@
          <TextBlock>TODO: MineCraft Packet Filters</TextBlock>
       </StackPanel>
 
-      <Border>
-        <ListBox>
+      <Border Margin="1" Padding="0" BorderThickness="1" BorderBrush="Black">
+        <ListBox Items="{Binding MineCraftPackets}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Border Margin="1,0,1,0" Padding="2" BorderThickness="1" BorderBrush="Gray">
+                <StackPanel>
+                  <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="2" />
+                  <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto" ShowGridLines="False">
+                    <Border Grid.Row="0" Grid.Column="0" BorderThickness="0,0,0,1" BorderBrush="Black">
+                      <TextBlock Text="Packet ID" FontWeight="Bold" Margin="2" />
+                    </Border>
+
+                    <Border Grid.Row="0" Grid.Column="1" BorderThickness="0,0,0,1" BorderBrush="Black">
+                      <TextBlock Text="Fields" FontWeight="Bold" Margin="2" HorizontalAlignment="Center" />
+                    </Border>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding ID}" FontWeight="Bold" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+                    <DataGrid Grid.Row="1" Grid.Column="1" Items="{Binding .}" AutoGenerateColumns="False">
+                       <DataGrid.Columns>
+                         <DataGridTextColumn Binding="{Binding Name}">
+                           <DataGridTextColumn.Header>
+                             <Border BorderThickness="0,0,0,1" BorderBrush="Black">
+                               <TextBlock Text="Name" FontWeight="Bold" />
+                             </Border>
+                           </DataGridTextColumn.Header>
+                         </DataGridTextColumn>
+                         <DataGridTextColumn Binding="{Binding Value}">
+                           <DataGridTextColumn.Header>
+                             <Border BorderThickness="0,0,0,1" BorderBrush="Black">
+                               <TextBlock Text="Value" FontWeight="Bold" />
+                             </Border>
+                           </DataGridTextColumn.Header>
+                         </DataGridTextColumn>
+                       </DataGrid.Columns>
+                    </DataGrid>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
         </ListBox>
       </Border>
     </DockPanel>

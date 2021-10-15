@@ -6,7 +6,7 @@ using McPacketDisplay.Models;
 
 namespace McPacketDisplay.Models.Packets
 {
-   public class MineCraftPacket : IMineCraftPacket
+   public class MineCraftPacket : IMineCraftPacket, IList<IField>
    {
       private readonly PacketID _packetID;
 
@@ -75,11 +75,58 @@ namespace McPacketDisplay.Models.Packets
 
       public PacketSource From { get => _source; }
 
+      #region IList<IField>
       /// <inheritdoc />
-      public IField this[int index] { get => _lstFields[index]; }
+      public IField this[int index]
+      { 
+         get => _lstFields[index];
+         set => throw new NotSupportedException();
+      }
+
+      public bool IsReadOnly { get => true; }
+
+      public void Add(IField field)
+      {
+         throw new NotSupportedException();
+      }
+
+      public void Clear()
+      {
+         throw new NotSupportedException();
+      }
 
       /// <inheritdoc />
       public int Count { get => _lstFields.Count; }
+
+      public bool Contains(IField field)
+      {
+         return _lstFields.Contains(field);
+      }
+
+      public void CopyTo(IField[] array, int arrayIndex)
+      {
+         _lstFields.CopyTo(array, arrayIndex);
+      }
+
+      public int IndexOf(IField item)
+      {
+         return _lstFields.IndexOf(item);
+      }
+
+      public void Insert(int index, IField item)
+      {
+         throw new NotSupportedException();
+      }
+
+      public bool Remove(IField item)
+      {
+         throw new NotSupportedException();
+      }
+
+      public void RemoveAt(int index)
+      {
+         throw new NotSupportedException();
+      }
 
       public IEnumerator<IField> GetEnumerator()
       {
@@ -90,6 +137,7 @@ namespace McPacketDisplay.Models.Packets
       {
          return _lstFields.GetEnumerator();
       }
+      #endregion
    }
 
    /// <summary>
