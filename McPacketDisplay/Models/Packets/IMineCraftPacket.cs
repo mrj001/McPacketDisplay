@@ -30,6 +30,12 @@ namespace McPacketDisplay.Models.Packets
       IField this[int index] { get; }
 
       /// <summary>
+      /// Gets the Field specified by Name.
+      /// </summary>
+      /// <value></value>
+      IField? this[string name] { get; }
+
+      /// <summary>
       /// Gets the number of Fields that this Packet contains.
       /// </summary>
       /// <value></value>

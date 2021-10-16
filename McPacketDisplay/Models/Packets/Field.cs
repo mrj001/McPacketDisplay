@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -114,6 +116,11 @@ namespace McPacketDisplay.Models.Packets
          _value = (sbyte)value;
       }
 
+      internal ByteField(string name, sbyte value) : base(name)
+      {
+         _value = value;
+      }
+
       public override object Value { get => _value; }
    }
 
@@ -124,6 +131,11 @@ namespace McPacketDisplay.Models.Packets
       internal ShortField(string name, Stream strm) : base(name)
       {
          _value = ReadShort(strm);
+      }
+
+      internal ShortField(string name, short value) : base(name)
+      {
+         _value = value;
       }
 
       public override object Value { get => _value; }
@@ -271,6 +283,18 @@ namespace McPacketDisplay.Models.Packets
       public override object Value { get => _value; }
    }
 
+   // public class ItemStackField : Field
+   // {
+   //    private readonly ItemStack _value;
+
+   //    internal ItemStackField(string name, Stream strm) : base(name)
+   //    {
+   //       _value = MineCraftStream.ReadItemStack(strm);
+   //    }
+
+   //    public override object Value { get => _value; }
+   // }
+
    public abstract class ArrayField : Field, IArrayField
    {
       private readonly int _count;
@@ -315,5 +339,91 @@ namespace McPacketDisplay.Models.Packets
       }
 
       public override object Value { get => _value; }
+   }
+
+   public class ItemArrayField : ArrayField, IList<ItemStack>
+   {
+      private readonly ItemStack[] _value;
+
+      internal ItemArrayField(string name, Stream strm, int count) : base(name, count)
+      {
+         short itemID;
+
+         _value = new ItemStack[count];
+         for (int j = 0; j < count; j++)
+         {
+            itemID = MineCraftStream.ReadShort(strm);
+            if (itemID >= 0)
+            {
+               int itemCount = MineCraftStream.ReadByte(strm);
+               int uses = MineCraftStream.ReadShort(strm);
+               _value[j] = new ItemStack(itemID, itemCount, uses);
+            }
+            else
+            {
+               _value[j] = ItemStack.Empty;
+            }
+         }
+      }
+
+      public override object Value { get => _value; }
+
+      public bool IsReadOnly { get => true; }
+
+      public ItemStack this[int index]
+      {
+         get => _value[index];
+         set => throw new NotSupportedException();
+      }
+
+      public void Add(ItemStack item)
+      {
+         throw new NotSupportedException();
+      }
+
+      public void Clear()
+      {
+         throw new NotSupportedException();
+      }
+
+      public bool Contains(ItemStack item)
+      {
+         throw new NotImplementedException();
+      }
+
+      public void CopyTo(ItemStack[] array, int arrayIndex)
+      {
+         throw new NotImplementedException();
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+         return _value.GetEnumerator();
+      }
+
+      public IEnumerator<ItemStack> GetEnumerator()
+      {
+         return (IEnumerator<ItemStack>)_value.GetEnumerator();
+      }
+
+      public int IndexOf(ItemStack item)
+      {
+         throw new NotImplementedException();
+      }
+
+      public void Insert(int index, ItemStack item)
+      {
+         throw new NotSupportedException();
+      }
+
+      public bool Remove(ItemStack item)
+      {
+         throw new NotSupportedException();
+      }
+
+      public void RemoveAt(int index)
+      {
+         throw new NotSupportedException();
+      }
    }
 }

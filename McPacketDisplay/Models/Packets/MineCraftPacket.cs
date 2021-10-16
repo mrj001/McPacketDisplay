@@ -16,19 +16,44 @@ namespace McPacketDisplay.Models.Packets
 
       private readonly List<IField> _lstFields;
 
+      #region Construction
       protected MineCraftPacket(PacketID packetID, IMineCraftPacketDefinition definition, Stream strm)
       {
          _packetID = packetID;
          _name = definition.Name;
          _source = definition.From;
+         _lstFields = new List<IField>(definition.Count);
+         GetFields(_lstFields, definition, strm);
+      }
 
-         _lstFields = new List<IField>();
+      /// <summary>
+      /// Reads the set of Fields from the Stream.  Sub-classes may override this to provide for
+      /// reading of a variable set of Fields.
+      /// </summary>
+      /// <param name="fields">The Fields being read are stored in this List.</param>
+      /// <param name="definition">The definition of the MineCraft Packet.</param>
+      /// <param name="strm">The Stream from which to read.</param>
+      /// <returns>A List of IField instances.</returns>
+      protected virtual void GetFields(List<IField> fields, IMineCraftPacketDefinition definition, Stream strm)
+      {
          for (int j = 0; j < definition.Count; j++)
          {
             IFieldDefinition fieldDefinition = definition[j];
-            IField field = Field.GetField(fieldDefinition, strm);
-            _lstFields.Add(field);
+            IField field = GetField(fieldDefinition, strm);
+            fields.Add(field);
          }
+      }
+
+      /// <summary>
+      /// Reads a Field from the Stream.  Sub-classes override this to read fields that require 
+      /// special handling.
+      /// </summary>
+      /// <param name="definition">The Field Definition to read.</param>
+      /// <param name="strm">The input stream</param>
+      /// <returns>An instance of IField read from the stream.</returns>
+      protected virtual IField GetField(IFieldDefinition definition, Stream strm)
+      {
+         return Field.GetField(definition, strm);
       }
 
       protected MineCraftPacket(PacketID packetID, string name)
@@ -37,6 +62,7 @@ namespace McPacketDisplay.Models.Packets
          _name = name;
          _lstFields = new List<IField>();
       }
+      #endregion
 
       /// <summary>
       /// 
@@ -59,12 +85,13 @@ namespace McPacketDisplay.Models.Packets
             return new MineCraftPacketUnknown(packetID);
          MineCraftPacketDefinition definition = protocol[j];
 
-         switch(packetID)
-         {
-            // TODO add Packet IDs with specific sub-classes.
-            default:
-               return new MineCraftPacket(packetID, definition, strm);
-         }
+         // TODO add Packet IDs with specific sub-classes.
+         if (packetID == 0x67)
+            return new MineCraftSetSlotPacket(packetID, definition, strm);
+         else if (packetID == 0x68)
+            return new MineCraftWindowItemsPacket(packetID, definition, strm);
+         else
+            return new MineCraftPacket(packetID, definition, strm);
       }
 
       /// <inheritdoc />
@@ -81,6 +108,19 @@ namespace McPacketDisplay.Models.Packets
       { 
          get => _lstFields[index];
          set => throw new NotSupportedException();
+      }
+
+      /// <inheritdoc />
+      public IField? this[string fieldName]
+      {
+         get
+         {
+            foreach(IField j in _lstFields)
+               if (j.Name == fieldName)
+                  return j;
+
+            return null;
+         }
       }
 
       public bool IsReadOnly { get => true; }
@@ -147,6 +187,52 @@ namespace McPacketDisplay.Models.Packets
    {
       internal MineCraftPacketUnknown(PacketID packetID) : base(packetID, "Unknown Packet")
       {
+      }
+   }
+
+   public class MineCraftSetSlotPacket : MineCraftPacket
+   {
+      internal MineCraftSetSlotPacket(PacketID packetID, MineCraftPacketDefinition definition, Stream strm) :
+               base(packetID, definition, strm)
+      {
+         
+      }
+
+      protected override IField GetField(IFieldDefinition definition, Stream strm)
+      {
+         // SMELL: This code is fragile in the event of renaming or re-ordering fields.
+         //        Such may occur if we decide to support other versions of the 
+         //        MineCraft Protocol.
+         if ((short)(this["ItemID"]?.Value ?? (short)0) == -1)
+         {
+            if (definition.Name == "Count")
+               return new ByteField(definition.Name, 0);
+
+            if (definition.Name == "Metadata")
+               return new ShortField(definition.Name, 0);
+         }
+
+         return base.GetField(definition, strm);
+      }
+   }
+
+   public class MineCraftWindowItemsPacket : MineCraftPacket
+   {
+      internal MineCraftWindowItemsPacket(PacketID packetID, MineCraftPacketDefinition definition, Stream strm) : base(packetID, definition, strm)
+      {
+
+      }
+
+      protected override IField GetField(IFieldDefinition definition, Stream strm)
+      {
+         // SMELL: This code is fragile in the event of renaming or re-ordering fields.
+         //        Such may occur if we decide to support other versions of the 
+         //        MineCraft Protocol.
+         if (definition.Name != "Items")
+            return base.GetField(definition, strm);
+
+         int itemCount = (int)(short)(this["Count"]?.Value ?? 0);
+         return new ItemArrayField("Items", strm, itemCount);
       }
    }
 }
