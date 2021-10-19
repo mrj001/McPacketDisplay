@@ -86,7 +86,9 @@ namespace McPacketDisplay.Models.Packets
          MineCraftPacketDefinition definition = protocol[j];
 
          // TODO add Packet IDs with specific sub-classes.
-         if (packetID == 0x66)
+         if (packetID == 0x33)
+            return new MineCraftChunkDataPacket(packetID, definition, strm);
+         else if (packetID == 0x66)
             return new MineCraftWindowClickPacket(packetID, definition, strm);
          else if (packetID == 0x67)
             return new MineCraftSetSlotPacket(packetID, definition, strm);
@@ -268,6 +270,24 @@ namespace McPacketDisplay.Models.Packets
          }
 
          return base.GetField(definition, strm);
+      }
+   }
+
+   public class MineCraftChunkDataPacket : MineCraftPacket
+   {
+      internal MineCraftChunkDataPacket(PacketID packetID, MineCraftPacketDefinition definition, Stream strm) :
+               base(packetID, definition, strm)
+      {
+
+      }
+
+      protected override IField GetField(IFieldDefinition definition, Stream strm)
+      {
+         if (definition.Name != "CompressedData")
+            return base.GetField(definition, strm);
+
+         int compressedSize = (int)this["CompressedSize"]!.Value;
+         return Field.GetField(definition, strm, compressedSize);
       }
    }
 }
