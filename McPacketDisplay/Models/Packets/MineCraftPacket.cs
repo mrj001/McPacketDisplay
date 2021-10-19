@@ -236,6 +236,12 @@ namespace McPacketDisplay.Models.Packets
          int itemCount = (int)(short)(this["Count"]?.Value ?? 0);
          return new ItemArrayField("Items", strm, itemCount);
       }
+
+      public int WindowID { get => (int)(sbyte)this["WindowID"]!.Value; }
+
+      public int ItemCount { get => ((ItemStack[])this["Items"]!.Value).Length; }
+
+      public ItemStack[] Items { get => ((ItemStack[])this["Items"]!.Value); }
    }
 
    public class MineCraftWindowClickPacket : MineCraftPacket
