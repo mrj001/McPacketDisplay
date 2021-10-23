@@ -14,7 +14,7 @@ namespace Test.Models.Packets
          {
             var rv = new TheoryData<Type, object, string, FieldDataType, byte[]>();
 
-            rv.Add(typeof(ByteField), (byte)5, "Fred", FieldDataType.Byte, new byte[] { 0x05 });
+            rv.Add(typeof(ByteField), (sbyte)5, "Fred", FieldDataType.Byte, new byte[] { 0x05 });
             rv.Add(typeof(ShortField), (short)322, "Barney", FieldDataType.Short, new byte[] { 0x01, 0x42 });
             rv.Add(typeof(IntegerField), 67_305_985, "Wilma", FieldDataType.Integer, new byte[] { 0x04, 0x03, 0x02, 0x01 });
             rv.Add(typeof(LongField), 5_446_742_853_292_462_124, "Betty", FieldDataType.Long, new byte[] { 0x4b, 0x96, 0xb7, 0xc4, 0x59, 0x65, 0x10, 0x2c });
