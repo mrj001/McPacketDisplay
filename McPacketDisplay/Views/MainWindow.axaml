@@ -32,7 +32,7 @@
       </StackPanel>
 
       <Border Margin="1" Padding="0" BorderThickness="1" BorderBrush="Black">
-        <ListBox Items="{Binding MineCraftPackets}">
+        <ListBox Items="{Binding RawMineCraftPackets}">
           <ListBox.DataTemplates>
             <DataTemplate DataType="{x:Type pkt:MineCraftWindowItemsPacket}">
               <Border Margin="1,0,1,0" Padding="2" BorderThickness="1" BorderBrush="Gray">

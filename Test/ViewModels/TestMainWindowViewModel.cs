@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Input;
 using McPacketDisplay.ViewModels;
@@ -44,7 +45,7 @@ namespace Test.ViewModels
          bool filenameChanged = false;
          bool rawTcpPacketsChanged = false;
          bool filteredTcpPacketsChanged = false;
-         bool mineCraftPacketsChanged = false;
+         bool rawMineCraftPacketsChanged = false;
 
          vm.PropertyChanged += ((sender, e) => {
             switch(e.PropertyName)
@@ -52,31 +53,36 @@ namespace Test.ViewModels
                case nameof(MainWindowViewModel.FileName):
                   filenameChanged = true;
                   break;
-
-               case nameof(MainWindowViewModel.RawTcpPackets):
-                  rawTcpPacketsChanged = true;
-                  break;
-
-               case nameof(MainWindowViewModel.FilteredTcpPackets):
-                  filteredTcpPacketsChanged = true;
-                  break;
-
-               case nameof(MainWindowViewModel.MineCraftPackets):
-                  mineCraftPacketsChanged = true;
-                  break;
             }
          });
 
+         ((INotifyCollectionChanged)vm.RawTcpPackets).CollectionChanged += ((s, e) =>
+         {
+            rawTcpPacketsChanged = true;
+         });
+
+         ((INotifyCollectionChanged)vm.FilteredTcpPackets).CollectionChanged += ((s, e) =>
+         {
+            filteredTcpPacketsChanged = true;
+         });
+
+         ((INotifyCollectionChanged)vm.RawMineCraftPackets).CollectionChanged += ((s, e) =>
+         {
+            rawMineCraftPacketsChanged = true;
+         });
+
          string expectedFileName = "Files/FourPackets.pcap";
+
          vm.FileName = expectedFileName;
+
          Assert.Equal(expectedFileName, vm.FileName);
          Assert.True(filenameChanged);
          Assert.True(rawTcpPacketsChanged);
          Assert.Equal(4, vm.RawTcpPackets.Count());
          Assert.True(filteredTcpPacketsChanged);
          Assert.Equal(4, vm.FilteredTcpPackets.Count());
-         Assert.True(mineCraftPacketsChanged);
-         Assert.Equal(26, vm.MineCraftPackets.Count());
+         Assert.True(rawMineCraftPacketsChanged);
+         Assert.Equal(26, vm.RawMineCraftPackets.Count());
       }
    }
 }

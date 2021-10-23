@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Net;
 using PacketDotNet;
 
@@ -7,7 +8,7 @@ namespace McPacketDisplay.ViewModels
    /// <summary>
    /// This interface is used to filter which TCP Packets will be processed for display.
    /// </summary>
-   public interface IFilterTcpPackets
+   public interface IFilterTcpPackets : INotifyPropertyChanged
    {
       /// <summary>
       /// Gets or sets the Server IP Address.

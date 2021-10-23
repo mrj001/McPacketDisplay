@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using Avalonia.Controls;
+using DynamicData;
 using McPacketDisplay.Models;
 using McPacketDisplay.Models.Packets;
 using PacketDotNet;
@@ -23,17 +26,28 @@ namespace McPacketDisplay.ViewModels
          OpenCommand = ReactiveCommand.Create(() => FileOpen());
 
          // When the FileName property changes, get a new RawTcpPackets value.
-         var obsRawTcpPackets = this.WhenAnyValue(x => x.FileName)
-                                    .Select(filename => ReadFile())
-                                    .ToProperty(this, x => x.RawTcpPackets, out _rawTcpPackets);
+         this.WhenAnyValue(x => x.FileName)
+             .Subscribe(filename => ReadFile());
 
-         var obsFilteredTcpPackets = this.WhenAny(x => x.RawTcpPackets, 
-                                                  b => b.Sender.RawTcpPackets.Where(c => TcpFilter.PassPacket(c)))
-                                         .ToProperty(this, x => x.FilteredTcpPackets, out _filteredTcpPackets);
+         var obsRawTcpPackets = _rawTcpPackets.Connect();
+         obsRawTcpPackets.Bind(out _obsRawTcpPackets).Subscribe();
 
-         var obsMineCraftPackets = this.WhenAny(x => x.FilteredTcpPackets,
-                                                y => y.Sender.GetPackets())
-                                       .ToProperty(this, x => x.MineCraftPackets, out _mineCraftPackets);
+         // When Raw Tcp Packets changes, update the Filtered TCP Packets
+         // TODO: also update when the Filter is changed.
+         obsRawTcpPackets//.CombineLatest(TcpFilter.WhenAnyPropertyChanged().StartWith(Array.Empty<IFilterTcpPackets>()), (changeset, filter) => changeset)
+                  .Filter(packet => TcpFilter.PassPacket(packet))
+                  .Bind(out _filteredTcpPackets)
+                  .DisposeMany()
+                  .Subscribe();
+
+         // When Filtered TCP Packets change, update the Raw MineCraft Packets.
+         // TODO: can we daisy-chain collections? Raw MineCraft Packets should be the
+         //       output from another pipeline starting with _filteredTcpPackets.
+         ((INotifyCollectionChanged)_filteredTcpPackets).CollectionChanged += ((s, e) => GetPackets());
+
+         var obsRawMineCraft = _rawMineCraftPackets.Connect();
+         obsRawMineCraft.Bind(out _obsRawMineCraftPackets)
+                  .Subscribe();
       }
 
       private IFilterTcpPackets _tcpFilter = new FilterTcpPackets();
@@ -60,39 +74,52 @@ namespace McPacketDisplay.ViewModels
 
 
       #region MineCraftPackets
-      private readonly ObservableAsPropertyHelper<IEnumerable<IMineCraftPacket>> _mineCraftPackets;
+      private readonly SourceList<IMineCraftPacket> _rawMineCraftPackets = new SourceList<IMineCraftPacket>();
+      private readonly ReadOnlyObservableCollection<IMineCraftPacket> _obsRawMineCraftPackets;
 
-      public IEnumerable<IMineCraftPacket> MineCraftPackets
+      public ReadOnlyObservableCollection<IMineCraftPacket> RawMineCraftPackets
       {
-         get => _mineCraftPackets.Value;
+         get => _obsRawMineCraftPackets;
       }
 
-      private IEnumerable<IMineCraftPacket> GetPackets()
+      private void GetPackets()
       {
-         return McPacketDisplay.Models.Packets.MineCraftPackets.GetPackets(MineCraftProtocol, FilteredTcpPackets);
+         _rawMineCraftPackets.Edit((x) =>
+         {
+            x.Clear();
+            IEnumerable<IMineCraftPacket> packets = McPacketDisplay.Models.Packets.MineCraftPackets.GetPackets(MineCraftProtocol, FilteredTcpPackets);
+            x.AddRange(packets);
+         });
       }
       #endregion
 
       #region RawTcpPackets
-      private readonly ObservableAsPropertyHelper<IEnumerable<TcpPacket>> _rawTcpPackets;
+      private readonly SourceList<TcpPacket> _rawTcpPackets = new SourceList<TcpPacket>();
+      private readonly ReadOnlyObservableCollection<TcpPacket> _obsRawTcpPackets;
 
-      public IEnumerable<TcpPacket> RawTcpPackets
+      public ReadOnlyObservableCollection<TcpPacket> RawTcpPackets
       {
-         get => _rawTcpPackets.Value;
+         get => _obsRawTcpPackets;
       }
 
-      private IEnumerable<TcpPacket> ReadFile()
+      private void ReadFile()
       {
-         return TcpPacketList.GetList(this.FileName);
+         _rawTcpPackets.Edit((x) =>
+         {
+            x.Clear();
+            IEnumerable<TcpPacket> packets = TcpPacketList.GetList(this.FileName);
+            foreach (TcpPacket packet in packets)
+               x.Add(packet);
+         });
       }
       #endregion
 
       #region FilteredTcpPackets
-      private readonly ObservableAsPropertyHelper<IEnumerable<TcpPacket>> _filteredTcpPackets;
+      private readonly ReadOnlyObservableCollection<TcpPacket> _filteredTcpPackets;
 
-      public IEnumerable<TcpPacket> FilteredTcpPackets
+      public ReadOnlyObservableCollection<TcpPacket> FilteredTcpPackets
       {
-         get => _filteredTcpPackets.Value;
+         get => _filteredTcpPackets;
       }
       #endregion
 
