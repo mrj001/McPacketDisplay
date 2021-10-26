@@ -11,12 +11,17 @@ namespace McPacketDisplay.Models
 
       private int _indexWithinPacket;
 
+      // Counts the number of packets in the input IEnumerable.
+      // Useful for finding the TCP packet within an input file with WireShark.
+      private int _packetIndex;
+
       private bool _endOfStream;
 
       public NetworkStream(IEnumerable<TcpPacket> packets)
       {
          _packets = packets.GetEnumerator();
          _endOfStream = !_packets.MoveNext();
+         _packetIndex = 1;  // WireShark numbers TCP packets from 1.
          _indexWithinPacket = 0;
       }
 
@@ -69,6 +74,7 @@ namespace McPacketDisplay.Models
             do
             {
                _endOfStream = !_packets.MoveNext();
+               _packetIndex++;
             } while (!_endOfStream && _packets.Current.PayloadData.Length == 0);
             _indexWithinPacket = 0;
             if (_endOfStream) return -1;

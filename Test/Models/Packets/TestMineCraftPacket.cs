@@ -40,17 +40,17 @@ namespace Test.Models.Packets
          return _protocol[j];
       }
 
-      public static TheoryData<Type, byte[]> GetPacket_TestData
+      public static TheoryData<Type, int, byte[]> GetPacket_TestData
       {
          get
          {
-            var rv = new TheoryData<Type, byte[]>();
+            var rv = new TheoryData<Type, int, byte[]>();
 
-            rv.Add(typeof(MineCraftPacket), new byte[] { 0x0a, 0x01 });
-            rv.Add(typeof(MineCraftSetSlotPacket), new byte[] { 0x67, 0xff, 0xff, 0xff, 0xff, 0xff });
-            rv.Add(typeof(MineCraftSetSlotPacket), new byte[] { 0x67, 0x01, 0x00, 0x20, 0x01, 0x0d, 0x01, 0x00, 0x16 });
-            rv.Add(typeof(MineCraftWindowClickPacket), new byte[] { 0x66, 0x01, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x07, 0x11, 0x00, 0x00 });
-            rv.Add(typeof(MineCraftWindowClickPacket), new byte[] { 0x66, 0x01, 0x00, 0x07, 0x00, 0x00, 0x02, 0x00, 0xff, 0xff });
+            rv.Add(typeof(MineCraftPacket), 5, new byte[] { 0x0a, 0x01 });
+            rv.Add(typeof(MineCraftSetSlotPacket), 7, new byte[] { 0x67, 0xff, 0xff, 0xff, 0xff, 0xff });
+            rv.Add(typeof(MineCraftSetSlotPacket), 11, new byte[] { 0x67, 0x01, 0x00, 0x20, 0x01, 0x0d, 0x01, 0x00, 0x16 });
+            rv.Add(typeof(MineCraftWindowClickPacket), 3, new byte[] { 0x66, 0x01, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x07, 0x11, 0x00, 0x00 });
+            rv.Add(typeof(MineCraftWindowClickPacket), 19, new byte[] { 0x66, 0x01, 0x00, 0x07, 0x00, 0x00, 0x02, 0x00, 0xff, 0xff });
 
             return rv;
          }
@@ -58,14 +58,14 @@ namespace Test.Models.Packets
 
       [Theory]
       [MemberData(nameof(GetPacket_TestData))]
-      public void GetPacket_Test(Type expectedType, byte[] streamData)
+      public void GetPacket_Test(Type expectedType, int expectedNumber, byte[] streamData)
       {
          PacketID expectedID = new PacketID(streamData[0]);
          IMineCraftPacket actual;
 
          using (MemoryStream strm = new MemoryStream(streamData))
          {
-            actual = MineCraftPacket.GetPacket(_protocol, strm);
+            actual = MineCraftPacket.GetPacket(expectedNumber, _protocol, strm);
 
             Assert.Equal(streamData.Length, strm.Position);
          }
@@ -73,6 +73,7 @@ namespace Test.Models.Packets
          IMineCraftPacketDefinition expectedDefinition = GetDefinition(expectedID);
 
          Assert.Equal(expectedType, actual.GetType());
+         Assert.Equal(expectedNumber, actual.PacketNumber);
          Assert.Equal(expectedID, actual.ID);
          Assert.Equal(expectedDefinition.Name, actual.Name);
          Assert.Equal(expectedDefinition.From, actual.From);
@@ -93,6 +94,7 @@ namespace Test.Models.Packets
       public void GetPacket_WindowItems_Test()
       {
          int expectedID = 0x68;
+         int expectedNumber = 13;
          IMineCraftPacket actual;
          byte[] streamData = new byte[] 
          {
@@ -116,7 +118,7 @@ namespace Test.Models.Packets
 
          using (MemoryStream strm = new MemoryStream(streamData))
          {
-            actual = MineCraftPacket.GetPacket(_protocol, strm);
+            actual = MineCraftPacket.GetPacket(expectedNumber, _protocol, strm);
 
             // Assert that the entire stream is exactly used up.
             Assert.Equal(streamData.Length, strm.Position);
@@ -125,6 +127,7 @@ namespace Test.Models.Packets
          IMineCraftPacketDefinition expectedDefinition = GetDefinition(new PacketID(expectedID));
 
          Assert.Equal(typeof(MineCraftWindowItemsPacket), actual.GetType());
+         Assert.Equal(expectedNumber, actual.PacketNumber);
          Assert.Equal(expectedID, actual.ID.ID);
          Assert.Equal(expectedDefinition.Name, actual.Name);
          Assert.Equal(expectedDefinition.From, actual.From);
