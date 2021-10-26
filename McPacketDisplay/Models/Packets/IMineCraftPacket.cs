@@ -6,6 +6,11 @@ namespace McPacketDisplay.Models.Packets
    public interface IMineCraftPacket : IEnumerable<IField>
    {
       /// <summary>
+      /// Gets the position of this MineCraft Packet within the stream of MineCraft Packets.
+      /// </summary>
+      int PacketNumber { get; }
+
+      /// <summary>
       /// Gets the Packet ID of the MineCraftPacket.
       /// </summary>
       /// <value>Returns the Packet ID.</value>

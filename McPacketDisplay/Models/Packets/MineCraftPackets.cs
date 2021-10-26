@@ -12,12 +12,14 @@ namespace McPacketDisplay.Models.Packets
       private MineCraftPackets(IMineCraftProtocol protocol, NetworkStream strm)
       {
          _packets = new List<IMineCraftPacket>();
+         int packetNumber = 1;
          IMineCraftPacket packet;
          do
          {
-            packet = MineCraftPacket.GetPacket(protocol, strm);
+            packet = MineCraftPacket.GetPacket(packetNumber, protocol, strm);
             if (packet is not null)
                _packets.Add(packet);
+            packetNumber++;
          } while (packet is not null);
       }
 

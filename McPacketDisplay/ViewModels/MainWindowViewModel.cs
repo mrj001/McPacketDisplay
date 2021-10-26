@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using System.Text;
 using Avalonia.Controls;
 using DynamicData;
+using DynamicData.Binding;
 using McPacketDisplay.Models;
 using McPacketDisplay.Models.Packets;
 using PacketDotNet;
@@ -24,6 +25,11 @@ namespace McPacketDisplay.ViewModels
          _dialogService = dialogService;
 
          OpenCommand = ReactiveCommand.Create(() => FileOpen());
+
+         // When the MineCraftProtocol property changes, update the MineCraftPacket Filter.
+         this.WhenAnyValue(x => x.MineCraftProtocol)
+             .Select(protocol => new MineCraftPacketFilter(protocol))
+             .ToProperty(this, x => x.MineCraftPacketFilter, out _mineCraftPacketFilter);
 
          // When the FileName property changes, get a new RawTcpPackets value.
          this.WhenAnyValue(x => x.FileName)
@@ -48,6 +54,26 @@ namespace McPacketDisplay.ViewModels
          var obsRawMineCraft = _rawMineCraftPackets.Connect();
          obsRawMineCraft.Bind(out _obsRawMineCraftPackets)
                   .Subscribe();
+
+         obsRawMineCraft.ObserveOn(RxApp.MainThreadScheduler)
+                  .Subscribe((a) => MineCraftPacketFilter.UpdateFilterPacketCounts(this.RawMineCraftPackets));
+
+         var obsMineCraftPacketFilter = MineCraftPacketFilter
+                  .WhenAnyPropertyChanged(new string[] { nameof(MineCraftPacketFilter.Serial) })
+                  .StartWith(new MineCraftPacketFilter[] { this.MineCraftPacketFilter })
+                  .Select(filter => BuildMineCraftPacketFilter(filter));
+
+         obsRawMineCraft.Filter(obsMineCraftPacketFilter)
+                  .Sort(MineCraftPacketComparer.Comparer)
+                  .Bind(out _filteredMineCraftPackets)
+                  .DisposeMany()
+                  .Subscribe();
+      }
+
+      private Func<IMineCraftPacket, bool> BuildMineCraftPacketFilter(MineCraftPacketFilter? filter)
+      {
+         if (filter is null) return packet => false;
+         return packet => filter.Pass(packet);
       }
 
       private IFilterTcpPackets _tcpFilter = new FilterTcpPackets();
@@ -90,6 +116,29 @@ namespace McPacketDisplay.ViewModels
             IEnumerable<IMineCraftPacket> packets = McPacketDisplay.Models.Packets.MineCraftPackets.GetPackets(MineCraftProtocol, FilteredTcpPackets);
             x.AddRange(packets);
          });
+      }
+      #endregion
+
+      #region MineCraft Packet Filter
+      private readonly ObservableAsPropertyHelper<MineCraftPacketFilter> _mineCraftPacketFilter;
+
+      public MineCraftPacketFilter MineCraftPacketFilter
+      {
+         get => _mineCraftPacketFilter.Value;
+      }
+
+      private void UpdateMineCraftPacketFilter()
+      {
+         MineCraftPacketFilter.UpdateFilterPacketCounts(this.RawMineCraftPackets);
+      }
+      #endregion
+
+      #region Filtered MineCraft Packets
+      private readonly ReadOnlyObservableCollection<IMineCraftPacket> _filteredMineCraftPackets;
+
+      public ReadOnlyObservableCollection<IMineCraftPacket> MineCraftPackets
+      {
+         get => _filteredMineCraftPackets;
       }
       #endregion
 

@@ -6,7 +6,7 @@
         xmlns:vw="using:McPacketDisplay.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
         x:Class="McPacketDisplay.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="McPacketDisplay">
@@ -24,15 +24,18 @@
         </MenuItem>
       </Menu>
 
-      <vw:TcpFilterControl DockPanel.Dock="Top" DataContext="{Binding TcpFilter}">
-      </vw:TcpFilterControl>
+      <Grid DockPanel.Dock="Top" RowDefinitions="180" ColumnDefinitions="Auto,Auto">
+        <vw:TcpFilterControl DataContext="{Binding TcpFilter}" Name="TheTcpFilterControl">
+        </vw:TcpFilterControl>
 
-      <StackPanel DockPanel.Dock="Top">
-         <TextBlock>TODO: MineCraft Packet Filters</TextBlock>
-      </StackPanel>
+        <vw:MineCraftPacketFilterControl
+              Grid.Column="1"
+              DataContext="{Binding MineCraftPacketFilter}"
+              />
+      </Grid>
 
       <Border Margin="1" Padding="0" BorderThickness="1" BorderBrush="Black">
-        <ListBox Items="{Binding RawMineCraftPackets}">
+        <ListBox Items="{Binding MineCraftPackets}">
           <ListBox.DataTemplates>
             <DataTemplate DataType="{x:Type pkt:MineCraftWindowItemsPacket}">
               <Border Margin="1,0,1,0" Padding="2" BorderThickness="1" BorderBrush="Gray">

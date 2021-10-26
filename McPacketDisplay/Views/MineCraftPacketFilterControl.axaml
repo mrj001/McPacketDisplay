@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="McPacketDisplay.Views.MineCraftPacketFilterControl">
+  <Border Margin="1" Padding="1" BorderThickness="1" BorderBrush="Black">
+   <DockPanel LastChildFill="True">
+     <TextBlock DockPanel.Dock="Top" FontWeight="Bold">MineCraft Packet Filters</TextBlock>
+     <DataGrid Items="{Binding .}" AutoGenerateColumns="false"
+         GridLinesVisibility="All"
+         VerticalScrollBarVisibility="Visible"
+         ClipToBounds="true"
+         HorizontalGridLinesBrush="Black"
+         VerticalGridLinesBrush="Black"
+         >
+       <DataGrid.Columns>
+         <!-- The template column with CheckBox updates the property immediately.
+              A DataGridCheckBoxColumn does not update until the record is changed. /> -->
+         <DataGridTemplateColumn Header="Pass">
+           <DataGridTemplateColumn.CellTemplate>
+             <DataTemplate>
+               <CheckBox IsChecked="{Binding Pass}"/>
+             </DataTemplate>
+           </DataGridTemplateColumn.CellTemplate>
+         </DataGridTemplateColumn>
+         <DataGridTextColumn Header="ID" Binding="{Binding ID}" />
+         <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+         <DataGridTextColumn Header="Source" Binding="{Binding Source}" />
+<!-- TODO Initially sort descending by this column.  See issue #6395 -->
+         <DataGridTextColumn Header="Count" Binding="{Binding PacketCount}" />
+       </DataGrid.Columns>
+       <DataGrid.Styles>
+         <Style Selector="DataGridColumnHeader">
+<!-- TODO Why aren't separators visible in the header? Orange background confirms this style is applied. -->
+           <Setter Property="AreSeparatorsVisible" Value="True" />
+           <!-- <Setter Property="Background" Value="Orange" /> -->
+         </Style>
+       </DataGrid.Styles>
+     </DataGrid>
+   </DockPanel>
+  </Border>
+</UserControl>

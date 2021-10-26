@@ -64,7 +64,7 @@ namespace Test.Models
          Assert.Throws<ArgumentOutOfRangeException>(() => actual[-1]);
          Assert.Throws<ArgumentOutOfRangeException>(() => actual[actual.Count]);
 
-         MineCraftPacketDefinition def = actual[0];
+         IMineCraftPacketDefinition def = actual[0];
          Assert.Equal("KeepAlivePacket", def.Name);
 
          def = actual[1];

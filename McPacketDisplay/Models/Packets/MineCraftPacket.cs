@@ -8,6 +8,8 @@ namespace McPacketDisplay.Models.Packets
 {
    public class MineCraftPacket : IMineCraftPacket, IList<IField>
    {
+      private readonly int _packetNumber;
+
       private readonly PacketID _packetID;
 
       private readonly string _name;
@@ -17,8 +19,9 @@ namespace McPacketDisplay.Models.Packets
       private readonly List<IField> _lstFields;
 
       #region Construction
-      protected MineCraftPacket(PacketID packetID, IMineCraftPacketDefinition definition, Stream strm)
+      protected MineCraftPacket(int PacketNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm)
       {
+         _packetNumber = PacketNumber;
          _packetID = packetID;
          _name = definition.Name;
          _source = definition.From;
@@ -56,8 +59,9 @@ namespace McPacketDisplay.Models.Packets
          return Field.GetField(definition, strm);
       }
 
-      protected MineCraftPacket(PacketID packetID, string name)
+      protected MineCraftPacket(int packetNumber, PacketID packetID, string name)
       {
+         _packetNumber = packetNumber;
          _packetID = packetID;
          _name = name;
          _lstFields = new List<IField>();
@@ -67,10 +71,11 @@ namespace McPacketDisplay.Models.Packets
       /// <summary>
       /// 
       /// </summary>
+      /// <param name="packetNumber">Specifies the position of the MineCraft Packet within the stream of Packets.</param>
       /// <param name="protocol"></param>
       /// <param name="strm"></param>
       /// <returns>An IMineCraftPacket or null if the end of the stream has been reached.</returns>
-      public static IMineCraftPacket GetPacket(IMineCraftProtocol protocol, Stream strm)
+      public static IMineCraftPacket GetPacket(int packetNumber, IMineCraftProtocol protocol, Stream strm)
       {
          int n = strm.ReadByte();
          if (n < 0)
@@ -82,21 +87,24 @@ namespace McPacketDisplay.Models.Packets
          while (j < jul && protocol[j].ID != packetID)
             j++;
          if (j == jul)
-            return new MineCraftPacketUnknown(packetID);
-         MineCraftPacketDefinition definition = protocol[j];
+            return new MineCraftPacketUnknown(packetNumber, packetID);
+         IMineCraftPacketDefinition definition = protocol[j];
 
          // TODO add Packet IDs with specific sub-classes.
          if (packetID == 0x33)
-            return new MineCraftChunkDataPacket(packetID, definition, strm);
+            return new MineCraftChunkDataPacket(packetNumber, packetID, definition, strm);
          else if (packetID == 0x66)
-            return new MineCraftWindowClickPacket(packetID, definition, strm);
+            return new MineCraftWindowClickPacket(packetNumber, packetID, definition, strm);
          else if (packetID == 0x67)
-            return new MineCraftSetSlotPacket(packetID, definition, strm);
+            return new MineCraftSetSlotPacket(packetNumber, packetID, definition, strm);
          else if (packetID == 0x68)
-            return new MineCraftWindowItemsPacket(packetID, definition, strm);
+            return new MineCraftWindowItemsPacket(packetNumber, packetID, definition, strm);
          else
-            return new MineCraftPacket(packetID, definition, strm);
+            return new MineCraftPacket(packetNumber, packetID, definition, strm);
       }
+
+      /// <inheritdoc />
+      public int PacketNumber { get => _packetNumber; }
 
       /// <inheritdoc />
       public PacketID ID { get => _packetID; }
@@ -189,15 +197,15 @@ namespace McPacketDisplay.Models.Packets
    /// </summary>
    public class MineCraftPacketUnknown : MineCraftPacket
    {
-      internal MineCraftPacketUnknown(PacketID packetID) : base(packetID, "Unknown Packet")
+      internal MineCraftPacketUnknown(int packetNumber,  PacketID packetID) : base(packetNumber, packetID, "Unknown Packet")
       {
       }
    }
 
    public class MineCraftSetSlotPacket : MineCraftPacket
    {
-      internal MineCraftSetSlotPacket(PacketID packetID, MineCraftPacketDefinition definition, Stream strm) :
-               base(packetID, definition, strm)
+      internal MineCraftSetSlotPacket(int packetNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm) :
+               base(packetNumber, packetID, definition, strm)
       {
          
       }
@@ -222,7 +230,8 @@ namespace McPacketDisplay.Models.Packets
 
    public class MineCraftWindowItemsPacket : MineCraftPacket
    {
-      internal MineCraftWindowItemsPacket(PacketID packetID, MineCraftPacketDefinition definition, Stream strm) : base(packetID, definition, strm)
+      internal MineCraftWindowItemsPacket(int packetNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm) :
+               base(packetNumber, packetID, definition, strm)
       {
 
       }
@@ -248,8 +257,8 @@ namespace McPacketDisplay.Models.Packets
 
    public class MineCraftWindowClickPacket : MineCraftPacket
    {
-      internal MineCraftWindowClickPacket(PacketID packetID, MineCraftPacketDefinition definition, Stream strm) :
-               base(packetID, definition, strm)
+      internal MineCraftWindowClickPacket(int packetNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm) :
+               base(packetNumber, packetID, definition, strm)
       {
 
       }
@@ -275,8 +284,8 @@ namespace McPacketDisplay.Models.Packets
 
    public class MineCraftChunkDataPacket : MineCraftPacket
    {
-      internal MineCraftChunkDataPacket(PacketID packetID, MineCraftPacketDefinition definition, Stream strm) :
-               base(packetID, definition, strm)
+      internal MineCraftChunkDataPacket(int packetNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm) :
+               base(packetNumber, packetID, definition, strm)
       {
 
       }

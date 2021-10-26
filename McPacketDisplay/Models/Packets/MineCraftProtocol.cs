@@ -1,6 +1,7 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace McPacketDisplay.Models.Packets
 {
@@ -10,7 +11,7 @@ namespace McPacketDisplay.Models.Packets
 
       private int _protocolVersion = 14;
 
-      private List<MineCraftPacketDefinition> _definitions = new List<MineCraftPacketDefinition>();
+      private List<IMineCraftPacketDefinition> _definitions = new List<IMineCraftPacketDefinition>();
 
       public MineCraftProtocol(XmlNode protocol)
       {
@@ -27,7 +28,7 @@ namespace McPacketDisplay.Models.Packets
 
       public int ProtocolVersion { get => _protocolVersion; }
 
-      public MineCraftPacketDefinition this[int index]
+      public IMineCraftPacketDefinition this[int index]
       {
          get
          {
@@ -36,5 +37,15 @@ namespace McPacketDisplay.Models.Packets
       }
 
       public int Count { get => _definitions.Count; }
+
+      public IEnumerator<IMineCraftPacketDefinition> GetEnumerator()
+      {
+         return _definitions.GetEnumerator();
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+         return _definitions.GetEnumerator();
+      }
    }
 }
