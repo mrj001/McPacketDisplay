@@ -919,16 +919,8 @@
         <type>short</type>
       </field>
       <field>
-        <name>ItemID</name>
-        <type>short</type>
-      </field>
-      <field>
-        <name>Count</name>
-        <type>byte</type>
-      </field>
-      <field>
-        <name>Metadata</name>
-        <type>short</type>
+        <name>Item</name>
+        <type>itemstack</type>
       </field>
     </fields>
   </packet>
@@ -1434,16 +1426,8 @@
         <type>bool</type>
       </field>
       <field>
-        <name>ItemID</name>
-        <type>short</type>
-      </field>
-      <field>
-        <name>Count</name>
-        <type>byte</type>
-      </field>
-      <field>
-        <name>Metadata</name>
-        <type>short</type>
+        <name>Item</name>
+        <type>itemstack</type>
       </field>
     </fields>
   </packet>

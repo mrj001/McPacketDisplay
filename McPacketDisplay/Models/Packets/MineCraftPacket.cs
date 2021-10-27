@@ -99,11 +99,7 @@ namespace McPacketDisplay.Models.Packets
          IMineCraftPacketDefinition definition = protocol[j];
 
          // TODO add Packet IDs with specific sub-classes.
-         if (packetID == 0x66)
-            return new MineCraftWindowClickPacket(packetNumber, packetID, definition, strm);
-         else if (packetID == 0x67)
-            return new MineCraftSetSlotPacket(packetNumber, packetID, definition, strm);
-         else if (packetID == 0x68)
+         if (packetID == 0x68)
             return new MineCraftWindowItemsPacket(packetNumber, packetID, definition, strm);
          else
             return new MineCraftPacket(packetNumber, packetID, definition, strm);
@@ -213,32 +209,6 @@ namespace McPacketDisplay.Models.Packets
       }
    }
 
-   public class MineCraftSetSlotPacket : MineCraftPacket
-   {
-      internal MineCraftSetSlotPacket(int packetNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm) :
-               base(packetNumber, packetID, definition, strm)
-      {
-         
-      }
-
-      protected override IField GetField(IFieldDefinition definition, Stream strm)
-      {
-         // SMELL: This code is fragile in the event of renaming or re-ordering fields.
-         //        Such may occur if we decide to support other versions of the 
-         //        MineCraft Protocol.
-         if ((short)(this["ItemID"]?.Value ?? (short)0) == -1)
-         {
-            if (definition.Name == "Count")
-               return new ByteField(definition.Name, 0);
-
-            if (definition.Name == "Metadata")
-               return new ShortField(definition.Name, 0);
-         }
-
-         return base.GetField(definition, strm);
-      }
-   }
-
    public class MineCraftWindowItemsPacket : MineCraftPacket
    {
       internal MineCraftWindowItemsPacket(int packetNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm) :
@@ -264,32 +234,5 @@ namespace McPacketDisplay.Models.Packets
       public int ItemCount { get => ((ItemStack[])this["Items"]!.Value).Length; }
 
       public ItemStack[] Items { get => ((ItemStack[])this["Items"]!.Value); }
-   }
-
-   public class MineCraftWindowClickPacket : MineCraftPacket
-   {
-      internal MineCraftWindowClickPacket(int packetNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm) :
-               base(packetNumber, packetID, definition, strm)
-      {
-
-      }
-
-
-      protected override IField GetField(IFieldDefinition definition, Stream strm)
-      {
-         // SMELL: This code is fragile in the event of renaming or re-ordering fields.
-         //        Such may occur if we decide to support other versions of the 
-         //        MineCraft Protocol.
-         if ((short)(this["ItemID"]?.Value ?? (short)0) == -1)
-         {
-            if (definition.Name == "Count")
-               return new ByteField(definition.Name, 0);
-
-            if (definition.Name == "Metadata")
-               return new ShortField(definition.Name, 0);
-         }
-
-         return base.GetField(definition, strm);
-      }
    }
 }
