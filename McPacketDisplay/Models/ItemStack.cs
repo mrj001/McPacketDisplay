@@ -37,5 +37,21 @@ namespace McPacketDisplay.Models.Packets
 
          return rv.ToString();
       }
+
+      public override bool Equals(object? obj)
+      {
+         ItemStack? other = obj as ItemStack;
+
+         if (other is null)
+            return false;
+
+         return (this.ID == -1 && this.ID == other.ID) ||
+            (this.ID == other.ID && this.Count == other.Count && this.Uses == other.Uses);
+      }
+
+      public override int GetHashCode()
+      {
+         return this.ID.GetHashCode() ^ this.Count.GetHashCode();
+      }
    }
 }

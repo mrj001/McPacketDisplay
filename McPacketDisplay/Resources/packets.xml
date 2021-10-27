@@ -1304,16 +1304,8 @@
         <type>byte</type>
       </field>
       <field>
-        <name>ItemID</name>
-        <type>short</type>
-      </field>
-      <field>
-        <name>Amount</name>
-        <type>byte</type>
-      </field>
-      <field>
-        <name>Damage</name>
-        <type>short</type>
+        <name>Item</name>
+        <type>itemstack</type>
       </field>
     </fields>
   </packet>

@@ -78,6 +78,9 @@ namespace McPacketDisplay.Models.Packets
             case "metadata":
                return FieldDataType.Metadata;
 
+            case "itemstack":
+               return FieldDataType.ItemStack;
+
             default:
                throw new InvalidCastException($"Unable to interpret FieldDataType: {node.InnerText}");
          }

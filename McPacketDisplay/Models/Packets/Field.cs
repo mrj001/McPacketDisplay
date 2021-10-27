@@ -53,6 +53,9 @@ namespace McPacketDisplay.Models.Packets
             case FieldDataType.Metadata:
                throw new NotImplementedException();
 
+            case FieldDataType.ItemStack:
+               return new ItemStackField(definition.Name, strm);
+
             default:
                throw new ArgumentException($"{nameof(definition)} contains an unknown value for the Field Data Type.");
          }
@@ -283,17 +286,17 @@ namespace McPacketDisplay.Models.Packets
       public override object Value { get => _value; }
    }
 
-   // public class ItemStackField : Field
-   // {
-   //    private readonly ItemStack _value;
+   public class ItemStackField : Field
+   {
+      private readonly ItemStack _value;
 
-   //    internal ItemStackField(string name, Stream strm) : base(name)
-   //    {
-   //       _value = MineCraftStream.ReadItemStack(strm);
-   //    }
+      internal ItemStackField(string name, Stream strm) : base(name)
+      {
+         _value = MineCraftStream.ReadItemStack(strm);
+      }
 
-   //    public override object Value { get => _value; }
-   // }
+      public override object Value { get => _value; }
+   }
 
    public abstract class ArrayField : Field, IArrayField
    {

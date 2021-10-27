@@ -15,7 +15,8 @@ namespace McPacketDisplay.Models.Packets
       String8,
       String16,
       Bool,
-      Metadata
+      Metadata,
+      ItemStack
    }
 
 }
