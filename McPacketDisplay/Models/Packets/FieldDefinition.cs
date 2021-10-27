@@ -15,6 +15,27 @@ namespace McPacketDisplay.Models.Packets
 
          XmlNode typeNode = nameNode.NextSibling!;
          FieldType = ParseTypeNode(typeNode);
+
+         if (FieldType == FieldDataType.ByteArray || FieldType == FieldDataType.ShortArray)
+         {
+            XmlNode? lengthNode = typeNode.NextSibling;
+            if (lengthNode is null)
+               throw new ArgumentException($"Field {Name} contains an array type, but is missing it's length node.");
+
+            XmlNode fieldNode = lengthNode.FirstChild!;
+            ArrayLengthField = fieldNode.InnerText;
+
+            XmlNode multiplierNode = fieldNode.NextSibling!;
+            Multiplier = int.Parse(multiplierNode.InnerText);
+         }
+         else
+         {
+            if (typeNode.NextSibling is not null)
+               throw new ArgumentException($"Field {Name} has a {(typeNode.NextSibling as XmlElement)?.Name ?? "extra"} node without an array type.");
+
+            ArrayLengthField = string.Empty;
+            Multiplier = 1;
+         }
       }
 
       private static FieldDataType ParseTypeNode(XmlNode node)
@@ -65,5 +86,9 @@ namespace McPacketDisplay.Models.Packets
       public string Name { get; }
 
       public FieldDataType FieldType { get; }
+
+      public string ArrayLengthField { get; }
+
+      public int Multiplier { get; }
    }
 }

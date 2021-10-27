@@ -667,6 +667,10 @@
       <field>
         <name>CompressedData</name>
         <type>byte[]</type>
+        <length>
+          <field>CompressedSize</field>
+          <multiplier>1</multiplier>
+        </length>
       </field>
     </fields>
   </packet>
@@ -690,14 +694,26 @@
       <field>
         <name>Coordinates</name>
         <type>short[]</type>
+        <length>
+          <field>ArraySize</field>
+          <multiplier>1</multiplier>
+        </length>
       </field>
       <field>
         <name>BlockIDs</name>
         <type>byte[]</type>
+        <length>
+          <field>ArraySize</field>
+          <multiplier>1</multiplier>
+        </length>
       </field>
       <field>
         <name>Metadata</name>
         <type>byte[]</type>
+        <length>
+          <field>ArraySize</field>
+          <multiplier>1</multiplier>
+        </length>
       </field>
     </fields>
   </packet>
@@ -783,6 +799,10 @@
       <field>
         <name>AffectedBlocks</name>
         <type>byte[]</type>
+        <length>
+          <field>RecordCount</field>
+          <multiplier>3</multiplier>
+        </length>
       </field>
     </fields>
   </packet>
@@ -928,6 +948,10 @@
       <field>
         <name>Items</name>
         <type>byte[]</type>
+        <length>
+          <field>Count</field>
+          <multiplier>1</multiplier>
+        </length>
       </field>
     </fields>
   </packet>
@@ -1024,6 +1048,10 @@
       <field>
         <name>Data</name>
         <type>byte[]</type>
+        <length>
+          <field>TextLength</field>
+          <multiplier>1</multiplier>
+        </length>
       </field>
     </fields>
   </packet>

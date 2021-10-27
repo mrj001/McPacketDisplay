@@ -33,10 +33,21 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:complexType name="ArrayLengthType">
+    <xs:sequence>
+      <!-- Specifies the name of the prior field that gives the length of an array type. -->
+      <xs:element name="field" type="xs:string" />
+      <xs:element name="multiplier" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+
    <xs:complexType name="FieldType">
       <xs:sequence>
          <xs:element name="name" type="xs:string" />
          <xs:element name="type" type="FieldDataType" />
+         <!-- This field must be present when FieldDataType is an array type,
+              and must not be present otherwise. -->
+         <xs:element name="length" type="ArrayLengthType" minOccurs="0" maxOccurs="1" />
       </xs:sequence>
    </xs:complexType>
 

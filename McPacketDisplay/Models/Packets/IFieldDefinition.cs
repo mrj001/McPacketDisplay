@@ -15,5 +15,16 @@ namespace McPacketDisplay.Models.Packets
       /// </summary>
       /// <value>The FieldDataType value of the Field.</value>
       FieldDataType FieldType { get; }
+
+      /// <summary>
+      /// Gets the name of the field specifying the Array Length.
+      /// </summary>
+      /// <remarks>If this field is not an array type, this must return a null or empty string.</remarks>
+      string ArrayLengthField { get; }
+
+      /// <summary>
+      /// Gets the Multiplier for the Array Length.
+      /// </summary>
+      int Multiplier { get; }
    }
 }

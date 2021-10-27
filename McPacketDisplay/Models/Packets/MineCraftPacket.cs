@@ -56,7 +56,15 @@ namespace McPacketDisplay.Models.Packets
       /// <returns>An instance of IField read from the stream.</returns>
       protected virtual IField GetField(IFieldDefinition definition, Stream strm)
       {
-         return Field.GetField(definition, strm);
+         if (!string.IsNullOrEmpty(definition.ArrayLengthField))
+         {
+            int itemCount = Convert.ToInt32(this[definition.ArrayLengthField]!.Value) * definition.Multiplier;
+            return Field.GetField(definition, strm, itemCount);
+         }
+         else
+         {
+            return Field.GetField(definition, strm);
+         }
       }
 
       protected MineCraftPacket(int packetNumber, PacketID packetID, string name)
@@ -91,9 +99,7 @@ namespace McPacketDisplay.Models.Packets
          IMineCraftPacketDefinition definition = protocol[j];
 
          // TODO add Packet IDs with specific sub-classes.
-         if (packetID == 0x33)
-            return new MineCraftChunkDataPacket(packetNumber, packetID, definition, strm);
-         else if (packetID == 0x66)
+         if (packetID == 0x66)
             return new MineCraftWindowClickPacket(packetNumber, packetID, definition, strm);
          else if (packetID == 0x67)
             return new MineCraftSetSlotPacket(packetNumber, packetID, definition, strm);
@@ -101,6 +107,11 @@ namespace McPacketDisplay.Models.Packets
             return new MineCraftWindowItemsPacket(packetNumber, packetID, definition, strm);
          else
             return new MineCraftPacket(packetNumber, packetID, definition, strm);
+      }
+
+      public override string ToString()
+      {
+         return Name;
       }
 
       /// <inheritdoc />
@@ -279,24 +290,6 @@ namespace McPacketDisplay.Models.Packets
          }
 
          return base.GetField(definition, strm);
-      }
-   }
-
-   public class MineCraftChunkDataPacket : MineCraftPacket
-   {
-      internal MineCraftChunkDataPacket(int packetNumber, PacketID packetID, IMineCraftPacketDefinition definition, Stream strm) :
-               base(packetNumber, packetID, definition, strm)
-      {
-
-      }
-
-      protected override IField GetField(IFieldDefinition definition, Stream strm)
-      {
-         if (definition.Name != "CompressedData")
-            return base.GetField(definition, strm);
-
-         int compressedSize = (int)this["CompressedSize"]!.Value;
-         return Field.GetField(definition, strm, compressedSize);
       }
    }
 }
