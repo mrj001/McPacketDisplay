@@ -51,7 +51,7 @@ namespace McPacketDisplay.Models.Packets
                return new BoolField(definition.Name, strm);
 
             case FieldDataType.Metadata:
-               throw new NotImplementedException();
+               return new MetaDataField(definition.Name, strm);
 
             case FieldDataType.ItemStack:
                return new ItemStackField(definition.Name, strm);
@@ -281,6 +281,74 @@ namespace McPacketDisplay.Models.Packets
             throw new EndOfStreamException();
 
          _value = (b != 0);
+      }
+
+      public override object Value { get => _value; }
+   }
+
+   public class MetaDataField : Field
+   {
+      private readonly object _value;
+
+      internal MetaDataField(string name, Stream strm) : base(name)
+      {
+         List<object> values = new List<object>();
+
+         int x = MineCraftStream.ReadByte(strm);
+         while (x != 127)
+         {
+            // Store index/bitmask value
+            values.Add((sbyte)(x & 0x1f));
+
+            switch(x >> 5)
+            {
+               case 0:
+                  values.Add(MineCraftStream.ReadByte(strm));
+                  break;
+
+               case 1:
+                  values.Add(MineCraftStream.ReadShort(strm));
+                  break;
+
+               case 2:
+                  values.Add(MineCraftStream.ReadInt(strm));
+                  break;
+
+               case 3:
+                  values.Add(MineCraftStream.ReadFloat(strm));
+                  break;
+
+               case 4:
+                  // NOTE: This is making an assumption that the UCS-2 string
+                  //   in metadata is stored in the same manner as a string16
+                  //   field within a packet.  This is not stated in the Wiki
+                  //   (dated 2011-08-14 04:59) on protocol 14.
+                  values.Add(MineCraftStream.ReadString16(strm));
+                  break;
+
+               case 5:
+                  // NOTE: The MineCraft wiki on the protocol 14
+                  //   (dated 2011-08-14 04:59) does not indicate that the
+                  //   count and damage fields are optional.  This makes this
+                  //   storage of an ItemStack different from others.
+                  short itemID = MineCraftStream.ReadShort(strm);
+                  sbyte count = MineCraftStream.ReadByte(strm);
+                  short damage = MineCraftStream.ReadShort(strm);
+                  values.Add(new ItemStack(itemID, count, damage));
+                  break;
+
+               case 6:
+                  int n1 = MineCraftStream.ReadInt(strm);
+                  int n2 = MineCraftStream.ReadInt(strm);
+                  int n3 = MineCraftStream.ReadInt(strm);
+                  values.Add(new int[] { n1, n2, n3 });
+                  break;
+            }
+
+            x = MineCraftStream.ReadByte(strm);
+         }
+
+         _value = values;
       }
 
       public override object Value { get => _value; }

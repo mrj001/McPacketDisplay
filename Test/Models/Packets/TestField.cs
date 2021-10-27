@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO;
 using McPacketDisplay.Models.Packets;
 using Moq;
@@ -68,6 +69,51 @@ namespace Test.Models.Packets
 
       }
 
+      public static TheoryData<Type, object, string, FieldDataType, byte[]> GetField_MetaData_TestData
+      {
+         get
+         {
+            var rv = new TheoryData<Type, object, string, FieldDataType, byte[]>();
+
+            rv.Add(typeof(MetaDataField), new sbyte[] { 0, 0 }, "Gilligan", FieldDataType.Metadata, new byte[] { 0x00, 0x00, 0x7f });
+            rv.Add(typeof(MetaDataField), new sbyte[] { 0, 0, 16, 0 }, "Skipper", FieldDataType.Metadata, new byte[] { 0x00, 0x00, 0x10, 0x00, 0x7f });
+
+            return rv;
+         }
+      }
+
+      [Theory]
+      [MemberData(nameof(GetField_MetaData_TestData))]
+      public void GetField_MetaData(Type expectedType, object expectedValue, string fieldName, FieldDataType fieldDataType, byte[] streamData)
+      {
+         Mock<IFieldDefinition> mockFieldDefinition = new Mock<IFieldDefinition>(MockBehavior.Strict);
+         mockFieldDefinition.Setup<string>((m) => m.Name).Returns(fieldName);
+         mockFieldDefinition.Setup<FieldDataType>((m) => m.FieldType).Returns(fieldDataType);
+
+         IField actual;
+         using (MemoryStream ms = new MemoryStream(streamData))
+            actual = Field.GetField(mockFieldDefinition.Object, ms);
+
+         Assert.Equal(expectedType, actual.GetType());
+         Assert.Equal(fieldName, actual.Name);
+         Assert.False(object.ReferenceEquals(expectedValue, actual.Value));  // Must not be testing referential equality.
+
+         IEnumerator j = ((IEnumerable)expectedValue).GetEnumerator();
+         IEnumerator k = ((IEnumerable)actual.Value).GetEnumerator();
+         bool nextj = j.MoveNext();
+         bool nextk = k.MoveNext();
+         while (nextj && nextk)
+         {
+            Assert.Equal(j.Current, k.Current);
+            nextj = j.MoveNext();
+            nextk = k.MoveNext();
+         }
+
+         // Both collections must be the same size
+         Assert.False(nextj);
+         Assert.False(nextk);
+      }
+
       public static TheoryData<Type, object, string, FieldDataType, byte[]> GetField_Array_TestData
       {
          get
@@ -109,7 +155,6 @@ namespace Test.Models.Packets
          Assert.Throws<IndexOutOfRangeException>(() => ((Array)actual.Value).GetValue(count));
       }
 
-      // TODO test that the array version throws for non-array types.
       [Fact]
       public void GetField_Array_Throws()
       {
