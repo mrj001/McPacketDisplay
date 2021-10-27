@@ -91,7 +91,10 @@
             <DataTemplate DataType="{x:Type pkt:IMineCraftPacket}">
               <Border Margin="1,0,1,0" Padding="2" BorderThickness="1" BorderBrush="Gray">
                 <StackPanel>
-                  <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="2" />
+                  <Grid RowDefinitions="Auto" ColumnDefinitions="Auto,*,Auto">
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="2" />
+                    <TextBlock Grid.Column="2" Text="{Binding PacketNumber}" Margin="2" />
+                  </Grid>
                   <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto" ShowGridLines="True">
                     <Border Grid.Row="0" Grid.Column="0" BorderThickness="0,0,0,1" BorderBrush="Black">
                       <TextBlock Text="Packet ID" FontWeight="Bold" Margin="2" />
