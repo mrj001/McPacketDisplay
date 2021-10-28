@@ -31,6 +31,11 @@ namespace McPacketDisplay.ViewModels
              .Select(protocol => new MineCraftPacketFilter(protocol))
              .ToProperty(this, x => x.MineCraftPacketFilter, out _mineCraftPacketFilter);
 
+         // An observer to fire whenever the TCP Packet Filter changes
+         var obsTcpPacketFilter = TcpFilter.WhenAnyPropertyChanged()
+                  .StartWith(new IFilterTcpPackets[] { TcpFilter })
+                  .Select(filter => BuildTcpPacketFilter(filter));
+
          // When the FileName property changes, get a new RawTcpPackets value.
          this.WhenAnyValue(x => x.FileName)
              .Subscribe(filename => ReadFile());
@@ -39,9 +44,8 @@ namespace McPacketDisplay.ViewModels
          obsRawTcpPackets.Bind(out _obsRawTcpPackets).Subscribe();
 
          // When Raw Tcp Packets changes, update the Filtered TCP Packets
-         // TODO: also update when the Filter is changed.
-         obsRawTcpPackets//.CombineLatest(TcpFilter.WhenAnyPropertyChanged().StartWith(Array.Empty<IFilterTcpPackets>()), (changeset, filter) => changeset)
-                  .Filter(packet => TcpFilter.PassPacket(packet))
+         obsRawTcpPackets
+                  .Filter(obsTcpPacketFilter)  // TODO: we must sort the TCP Packets into their correct order.
                   .Bind(out _filteredTcpPackets)
                   .DisposeMany()
                   .Subscribe();
@@ -68,6 +72,12 @@ namespace McPacketDisplay.ViewModels
                   .Bind(out _filteredMineCraftPackets)
                   .DisposeMany()
                   .Subscribe();
+      }
+
+      private Func<TcpPacket, bool> BuildTcpPacketFilter(IFilterTcpPackets? filter)
+      {
+         if (filter is null) return packet => true;
+         return packet => filter.PassPacket(packet);
       }
 
       private Func<IMineCraftPacket, bool> BuildMineCraftPacketFilter(MineCraftPacketFilter? filter)
