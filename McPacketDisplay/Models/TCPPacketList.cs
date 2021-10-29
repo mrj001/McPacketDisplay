@@ -1,22 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using PacketDotNet;
 using SharpPcap;
 using SharpPcap.LibPcap;
 
 namespace McPacketDisplay.Models
 {
-   public class TcpPacketList : IEnumerable<TcpPacket>
+   public class TcpPacketList : IEnumerable<ITcpPacket>
    {
-      private readonly List<TcpPacket> _lst;
-#region Construction
+      private readonly List<ITcpPacket> _lst;
+      #region Construction
       private TcpPacketList()
       {
-         _lst = new List<TcpPacket>(1);
+         _lst = new List<ITcpPacket>(1);
       }
 
-      private TcpPacketList(List<TcpPacket> lst)
+      private TcpPacketList(List<ITcpPacket> lst)
       {
          _lst = lst;
       }
@@ -32,7 +31,9 @@ namespace McPacketDisplay.Models
 
       private class Factory
       {
-         private List<TcpPacket> _lst = new List<TcpPacket>();
+         private List<ITcpPacket> _lst = new List<ITcpPacket>();
+         private int serial = 0;
+         private PosixTimeval? _baseTime = null;
 
          public TcpPacketList GetPacketList(string filename)
          {
@@ -49,16 +50,48 @@ namespace McPacketDisplay.Models
          private void device_OnPacketArrival(object sender, PacketCapture e)
          {
             RawCapture rawPacket = e.GetPacket();
-            Packet packet = PacketDotNet.Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
+            PacketDotNet.Packet packet = PacketDotNet.Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
 
-            TcpPacket tcp = packet.Extract<TcpPacket>();
+            PacketDotNet.TcpPacket tcp = packet.Extract<PacketDotNet.TcpPacket>();
             if (tcp is not null)
-               _lst.Add(tcp);
+            {
+               serial++;
+               PosixTimeval relativeTime = GetRelativeTime(rawPacket.Timeval);
+               _lst.Add(new TcpPacket(serial, relativeTime, tcp));
+            }
+         }
+
+         private PosixTimeval GetRelativeTime(PosixTimeval posixTimeval)
+         {
+            ulong relmicro;
+            ulong relsec;
+
+            if (_baseTime is not null)
+            {
+               if (posixTimeval.MicroSeconds <= _baseTime.MicroSeconds)
+               {
+                  relmicro = _baseTime.MicroSeconds - posixTimeval.MicroSeconds;
+                  relsec = _baseTime.Seconds - posixTimeval.Seconds;
+               }
+               else
+               {
+                  relmicro = 1_000_000 + _baseTime.MicroSeconds - posixTimeval.MicroSeconds;
+                  relsec = _baseTime.Seconds - 1 - posixTimeval.Seconds;
+               }
+            }
+            else
+            {
+               _baseTime = posixTimeval;
+               relsec = 0;
+               relmicro = 0;
+            }
+
+            return new PosixTimeval(relsec, relmicro);
          }
       }
       #endregion
 
-      public IEnumerator<TcpPacket> GetEnumerator()
+      public IEnumerator<ITcpPacket> GetEnumerator()
       {
          return _lst.GetEnumerator();
       }

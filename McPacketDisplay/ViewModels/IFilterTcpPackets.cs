@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Net;
-using PacketDotNet;
+using McPacketDisplay.Models;
 
 namespace McPacketDisplay.ViewModels
 {
@@ -59,6 +59,6 @@ namespace McPacketDisplay.ViewModels
       /// </summary>
       /// <param name="packet">The TCP Packet to check.</param>
       /// <returns>True if the Packet passes the filter; false otherwise.</returns>
-      bool PassPacket(TcpPacket packet);
+      bool PassPacket(ITcpPacket packet);
    }
 }

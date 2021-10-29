@@ -30,7 +30,7 @@ namespace McPacketDisplay.Models.Packets
             return new MineCraftPackets(protocol, strm);
       }
 
-      public static MineCraftPackets GetPackets(IMineCraftProtocol protocol, IEnumerable<TcpPacket> tcpPackets)
+      public static MineCraftPackets GetPackets(IMineCraftProtocol protocol, IEnumerable<ITcpPacket> tcpPackets)
       {
          using (NetworkStream strm = new NetworkStream(tcpPackets))
             return new MineCraftPackets(protocol, strm);

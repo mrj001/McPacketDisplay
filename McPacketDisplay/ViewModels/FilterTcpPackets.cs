@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using ReactiveUI;
-using PacketDotNet;
+using McPacketDisplay.Models;
 
 namespace McPacketDisplay.ViewModels
 {
@@ -94,20 +94,10 @@ namespace McPacketDisplay.ViewModels
       }
 
       /// <inheritdoc />
-      public bool PassPacket(TcpPacket packet)
+      public bool PassPacket(ITcpPacket packet)
       {
-         IPAddress src, dest;
-
-         if (packet.ParentPacket is IPv4Packet)
-         {
-            src = ((IPv4Packet)packet.ParentPacket).SourceAddress;
-            dest = ((IPv4Packet)packet.ParentPacket).DestinationAddress;
-         }
-         else
-         {
-            src = ((IPv6Packet)packet.ParentPacket).SourceAddress;
-            dest = ((IPv6Packet)packet.ParentPacket).DestinationAddress;
-         }
+         IPAddress src = packet.SourceAddress;
+         IPAddress dest = packet.DestinationAddress;
 
          if (!CheckAddressFilter(_applyServerAddressFilter, _serverAddress, src, dest,
             _applyServerPortFilter, _serverPort, packet.SourcePort, packet.DestinationPort))

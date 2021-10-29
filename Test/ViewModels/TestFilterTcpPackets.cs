@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.Net;
+using McPacketDisplay.Models;
 using McPacketDisplay.ViewModels;
+using Moq;
 using PacketDotNet;
 using Xunit;
 
@@ -226,10 +228,11 @@ namespace Test.ViewModels
       {
          IPAddress srcAddr = IPAddress.Parse(packetSourceAddr);
          IPAddress dstAddr = IPAddress.Parse(packetDestAddr);
-         IPv4Packet ipPacket = new IPv4Packet(srcAddr, dstAddr);
-
-         TcpPacket tcpPacket = new TcpPacket(packetSourcePort, packetDestPort);
-         tcpPacket.ParentPacket = ipPacket;
+         Mock<ITcpPacket> mockTcpPacket = new Mock<ITcpPacket>(MockBehavior.Strict);
+         mockTcpPacket.Setup(x => x.SourceAddress).Returns(srcAddr);
+         mockTcpPacket.Setup(x => x.SourcePort).Returns(packetSourcePort);
+         mockTcpPacket.Setup(x => x.DestinationAddress).Returns(dstAddr);
+         mockTcpPacket.Setup(x => x.DestinationPort).Returns(packetDestPort);
 
          IFilterTcpPackets filter = new FilterTcpPackets();
          filter.ServerAddress = IPAddress.Parse(filterServerAddr);
@@ -241,7 +244,7 @@ namespace Test.ViewModels
          filter.ClientPort = filterClientPort;
          filter.ApplyClientPortFilter = (fields & ApplyFields.ClientPort) != ApplyFields.None;
 
-         bool actualPass = filter.PassPacket(tcpPacket);
+         bool actualPass = filter.PassPacket(mockTcpPacket.Object);
 
          Assert.Equal(expectedPass, actualPass);
       }

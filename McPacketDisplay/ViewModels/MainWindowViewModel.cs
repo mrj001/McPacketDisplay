@@ -45,7 +45,8 @@ namespace McPacketDisplay.ViewModels
 
          // When Raw Tcp Packets changes, update the Filtered TCP Packets
          obsRawTcpPackets
-                  .Filter(obsTcpPacketFilter)  // TODO: we must sort the TCP Packets into their correct order.
+                  .Filter(obsTcpPacketFilter)
+                  .Sort(new TcpPacketComparer())
                   .Bind(out _filteredTcpPackets)
                   .DisposeMany()
                   .Subscribe();
@@ -74,7 +75,7 @@ namespace McPacketDisplay.ViewModels
                   .Subscribe();
       }
 
-      private Func<TcpPacket, bool> BuildTcpPacketFilter(IFilterTcpPackets? filter)
+      private Func<ITcpPacket, bool> BuildTcpPacketFilter(IFilterTcpPackets? filter)
       {
          if (filter is null) return packet => true;
          return packet => filter.PassPacket(packet);
@@ -153,10 +154,10 @@ namespace McPacketDisplay.ViewModels
       #endregion
 
       #region RawTcpPackets
-      private readonly SourceList<TcpPacket> _rawTcpPackets = new SourceList<TcpPacket>();
-      private readonly ReadOnlyObservableCollection<TcpPacket> _obsRawTcpPackets;
+      private readonly SourceList<ITcpPacket> _rawTcpPackets = new SourceList<ITcpPacket>();
+      private readonly ReadOnlyObservableCollection<ITcpPacket> _obsRawTcpPackets;
 
-      public ReadOnlyObservableCollection<TcpPacket> RawTcpPackets
+      public ReadOnlyObservableCollection<ITcpPacket> RawTcpPackets
       {
          get => _obsRawTcpPackets;
       }
@@ -166,17 +167,17 @@ namespace McPacketDisplay.ViewModels
          _rawTcpPackets.Edit((x) =>
          {
             x.Clear();
-            IEnumerable<TcpPacket> packets = TcpPacketList.GetList(this.FileName);
-            foreach (TcpPacket packet in packets)
+            IEnumerable<ITcpPacket> packets = TcpPacketList.GetList(this.FileName);
+            foreach (ITcpPacket packet in packets)
                x.Add(packet);
          });
       }
       #endregion
 
       #region FilteredTcpPackets
-      private readonly ReadOnlyObservableCollection<TcpPacket> _filteredTcpPackets;
+      private readonly ReadOnlyObservableCollection<ITcpPacket> _filteredTcpPackets;
 
-      public ReadOnlyObservableCollection<TcpPacket> FilteredTcpPackets
+      public ReadOnlyObservableCollection<ITcpPacket> FilteredTcpPackets
       {
          get => _filteredTcpPackets;
       }

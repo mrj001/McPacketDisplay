@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using PacketDotNet;
 
 namespace McPacketDisplay.Models
 {
    public class NetworkStream : Stream
    {
-      private readonly IEnumerator<TcpPacket> _packets;
+      private readonly IEnumerator<ITcpPacket> _packets;
 
       private int _indexWithinPacket;
 
@@ -17,7 +16,7 @@ namespace McPacketDisplay.Models
 
       private bool _endOfStream;
 
-      public NetworkStream(IEnumerable<TcpPacket> packets)
+      public NetworkStream(IEnumerable<ITcpPacket> packets)
       {
          _packets = packets.GetEnumerator();
          _endOfStream = !_packets.MoveNext();
@@ -69,18 +68,18 @@ namespace McPacketDisplay.Models
       {
          if (_endOfStream) return -1;
 
-         if (_indexWithinPacket >= _packets.Current.PayloadData.Length)
+         if (_indexWithinPacket >= _packets.Current.PayloadDataLength)
          {
             do
             {
                _endOfStream = !_packets.MoveNext();
                _packetIndex++;
-            } while (!_endOfStream && _packets.Current.PayloadData.Length == 0);
+            } while (!_endOfStream && _packets.Current.PayloadDataLength == 0);
             _indexWithinPacket = 0;
             if (_endOfStream) return -1;
          }
 
-         int rv = _packets.Current.PayloadData[_indexWithinPacket];
+         int rv = _packets.Current[_indexWithinPacket];
          _indexWithinPacket++;
          return rv;
       }
