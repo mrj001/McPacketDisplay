@@ -20,7 +20,7 @@ namespace Test.Models
       {
          TcpPacketList actual = TcpPacketList.GetList(String.Empty);
 
-         Assert.Equal(0, actual.Count());
+         Assert.Empty(actual);
       }
    }
 }
