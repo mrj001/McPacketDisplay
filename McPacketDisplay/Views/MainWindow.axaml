@@ -23,6 +23,9 @@
       <Style Selector="ScrollBar">
         <Setter Property="AllowAutoHide" Value="false" />
       </Style>
+      <Style Selector="ScrollViewer">
+        <Setter Property="AllowAutoHide" Value="False"/>
+      </Style>
     </Window.Styles>
 
     <DockPanel LastChildFill="True">
