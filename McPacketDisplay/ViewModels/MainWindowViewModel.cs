@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -39,6 +40,11 @@ namespace McPacketDisplay.ViewModels
          // When the FileName property changes, get a new RawTcpPackets value.
          this.WhenAnyValue(x => x.FileName)
              .Subscribe(filename => ReadFile());
+
+         // When the FileName property changes, update the Title
+         this.WhenAnyValue(x => x.FileName)
+            .Select(fn => FileNameToTitle())
+            .ToProperty(this, x => x.Title, out _title);
 
          var obsRawTcpPackets = _rawTcpPackets.Connect();
          obsRawTcpPackets.Bind(out _obsRawTcpPackets).Subscribe();
@@ -102,6 +108,20 @@ namespace McPacketDisplay.ViewModels
       {
          get => _filename;
          set => this.RaiseAndSetIfChanged(ref _filename, value);
+      }
+      #endregion
+
+      #region Title
+      private readonly ObservableAsPropertyHelper<string> _title;
+
+      public string Title { get => _title.Value; }
+
+      private string FileNameToTitle()
+      {
+         if (!string.IsNullOrEmpty(FileName))
+            return $"McPacketDisplay - {Path.GetFileName(FileName)}";
+         else
+            return "McPacketDisplay";
       }
       #endregion
 

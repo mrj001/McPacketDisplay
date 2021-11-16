@@ -9,7 +9,7 @@
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
         x:Class="McPacketDisplay.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="McPacketDisplay">
+        Title="{Binding Title}">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
