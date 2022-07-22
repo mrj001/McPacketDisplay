@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Net;
 using McPacketDisplay.Models;
+using McPacketDisplay.Models.Packets;
 
 namespace McPacketDisplay.ViewModels
 {
@@ -60,5 +61,12 @@ namespace McPacketDisplay.ViewModels
       /// <param name="packet">The TCP Packet to check.</param>
       /// <returns>True if the Packet passes the filter; false otherwise.</returns>
       bool PassPacket(ITcpPacket packet);
+
+      /// <summary>
+      /// Determines the source of the given Packet.
+      /// </summary>
+      /// <param name="packet">The TCP Packet to check.</param>
+      /// <returns>PacketSource.Server if the source port (and possibly address) matches that of the server.</returns>
+      PacketSource GetPacketSource(ITcpPacket packet);
    }
 }

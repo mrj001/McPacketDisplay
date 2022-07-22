@@ -144,7 +144,7 @@ namespace McPacketDisplay.ViewModels
          _rawMineCraftPackets.Edit((x) =>
          {
             x.Clear();
-            IEnumerable<IMineCraftPacket> packets = McPacketDisplay.Models.Packets.MineCraftPackets.GetPackets(MineCraftProtocol, FilteredTcpPackets);
+            IEnumerable<IMineCraftPacket> packets = McPacketDisplay.Models.Packets.MineCraftPackets.GetPackets(MineCraftProtocol, TcpFilter, FilteredTcpPackets);
             x.AddRange(packets);
          });
       }

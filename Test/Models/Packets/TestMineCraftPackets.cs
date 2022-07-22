@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
+using McPacketDisplay.Models;
 using McPacketDisplay.Models.Packets;
+using McPacketDisplay.ViewModels;
+using Moq;
 using Xunit;
 
 namespace Test.Models.Packets
@@ -12,7 +15,11 @@ namespace Test.Models.Packets
       {
          IMineCraftProtocol protocol = MineCraftTestingProtocol.GetProtocol();
 
-         MineCraftPackets actual = MineCraftPackets.GetPackets(protocol, "Files/FourPackets.pcap");
+         Mock<IFilterTcpPackets> mockTcpFilter = new Mock<IFilterTcpPackets>(MockBehavior.Strict);
+         mockTcpFilter.Setup(x => x.GetPacketSource(It.Is<ITcpPacket>(p => p.SourcePort == 25565))).Returns(PacketSource.Server);
+         mockTcpFilter.Setup(x => x.GetPacketSource(It.Is<ITcpPacket>(p => p.SourcePort != 25565))).Returns(PacketSource.Client);
+
+         MineCraftPackets actual = MineCraftPackets.GetPackets(protocol, mockTcpFilter.Object, "Files/FourPackets.pcap");
 
          int[] expectedIDs = new int[]
          {

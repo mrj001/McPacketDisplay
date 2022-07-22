@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Net;
 using McPacketDisplay.Models;
+using McPacketDisplay.Models.Packets;
 using McPacketDisplay.ViewModels;
 using Moq;
 using PacketDotNet;
@@ -247,6 +248,57 @@ namespace Test.ViewModels
          bool actualPass = filter.PassPacket(mockTcpPacket.Object);
 
          Assert.Equal(expectedPass, actualPass);
+      }
+
+      public static TheoryData<PacketSource, bool, string, ushort, string, ushort> GetPacketSource_TestData
+      {
+         get
+         {
+            TheoryData<PacketSource, bool, string, ushort, string, ushort> rv = new();
+
+            // Packet is claimed to be from server and we aren't filtering by server address
+            rv.Add(PacketSource.Server, false, "192.168.0.21", 25565, "192.168.0.21", 25565);
+
+            // Packet is claimed to be from server and we are filtering by server address
+            rv.Add(PacketSource.Server, true, "192.168.0.21", 25565, "192.168.0.21", 25565);
+
+            // Packet is identified as being from the Client due to port mismatch
+            rv.Add(PacketSource.Client, false, "127.0.0.1", 25565, "127.0.0.1", 5432);
+
+            // Packet is identified as being from the Server due to matching port numbers
+            rv.Add(PacketSource.Server, false, "127.0.0.1", 25565, "127.0.0.1", 25565);
+
+            // Weird edge case:
+            // Packet is identified as being from the Client due to the IP address not matching.
+            // This would be a peculiar situation (but cannot be ruled out).  The client
+            // is running on a different machine, but happened to get the same port number
+            // as the server.  To get accurate results, the address filter would required.
+            rv.Add(PacketSource.Client, true, "192.168.0.21", 25565, "192.168.0.20", 25565);
+
+            return rv;
+         }
+      }
+
+      [Theory]
+      [MemberData(nameof(GetPacketSource_TestData))]
+      public void GetPacketSource_Test(PacketSource expectedSource, bool applyServerAddress,
+         string filterServerAddr, ushort filterServerPort,
+         string packetSourceAddr, ushort packetSourcePort)
+      {
+         IPAddress srcAddr = IPAddress.Parse(packetSourceAddr);
+         Mock<ITcpPacket> mockTcpPacket = new Mock<ITcpPacket>(MockBehavior.Strict);
+         mockTcpPacket.Setup(x => x.SourceAddress).Returns(srcAddr);
+         mockTcpPacket.Setup(x => x.SourcePort).Returns(packetSourcePort);
+
+         IFilterTcpPackets filter = new FilterTcpPackets();
+         filter.ServerAddress = IPAddress.Parse(filterServerAddr);
+         filter.ApplyServerAddressFilter = applyServerAddress;
+         filter.ServerPort = filterServerPort;
+         filter.ApplyServerPortFilter = true;
+
+         PacketSource actualSource = filter.GetPacketSource(mockTcpPacket.Object);
+
+         Assert.Equal(expectedSource, actualSource);
       }
    }
 }

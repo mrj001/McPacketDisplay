@@ -80,10 +80,11 @@ namespace McPacketDisplay.Models.Packets
       /// 
       /// </summary>
       /// <param name="packetNumber">Specifies the position of the MineCraft Packet within the stream of Packets.</param>
+      /// <param name="packetSource"></param>
       /// <param name="protocol"></param>
       /// <param name="strm"></param>
       /// <returns>An IMineCraftPacket or null if the end of the stream has been reached.</returns>
-      public static IMineCraftPacket GetPacket(int packetNumber, IMineCraftProtocol protocol, Stream strm)
+      public static IMineCraftPacket GetPacket(int packetNumber, IMineCraftProtocol protocol, PacketSource packetSource, Stream strm)
       {
          int n = strm.ReadByte();
          if (n < 0)
@@ -92,7 +93,7 @@ namespace McPacketDisplay.Models.Packets
 
          int j = 0;
          int jul = protocol.Count;
-         while (j < jul && protocol[j].ID != packetID)
+         while (j < jul && (protocol[j].From != packetSource || protocol[j].ID != packetID))
             j++;
          if (j == jul)
             return new MineCraftPacketUnknown(packetNumber, packetID);

@@ -81,7 +81,7 @@ namespace Test.Models.Packets
 
          using (MemoryStream strm = new MemoryStream(streamData))
          {
-            actual = MineCraftPacket.GetPacket(expectedNumber, _protocol, strm);
+            actual = MineCraftPacket.GetPacket(expectedNumber, _protocol, expectedSource, strm);
 
             Assert.Equal(streamData.Length, strm.Position);
          }
@@ -136,7 +136,7 @@ namespace Test.Models.Packets
 
          using (MemoryStream strm = new MemoryStream(streamData))
          {
-            actual = MineCraftPacket.GetPacket(expectedNumber, _protocol, strm);
+            actual = MineCraftPacket.GetPacket(expectedNumber, _protocol, expectedSource, strm);
 
             // Assert that the entire stream is exactly used up.
             Assert.Equal(streamData.Length, strm.Position);

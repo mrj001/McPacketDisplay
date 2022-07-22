@@ -4,6 +4,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using ReactiveUI;
 using McPacketDisplay.Models;
+using McPacketDisplay.Models.Packets;
 
 namespace McPacketDisplay.ViewModels
 {
@@ -105,6 +106,18 @@ namespace McPacketDisplay.ViewModels
 
          return CheckAddressFilter(_applyClientAddressFilter, _clientAddress, src, dest,
             _applyClientPortFilter, _clientPort, packet.SourcePort, packet.DestinationPort);
+      }
+
+      /// <inheritdoc />
+      public PacketSource GetPacketSource(ITcpPacket packet)
+      {
+         if (_serverPort != packet.SourcePort)
+            return PacketSource.Client;
+
+         if (_applyServerAddressFilter && !_serverAddress.Equals(packet.SourceAddress))
+            return PacketSource.Client;
+
+         return PacketSource.Server;
       }
 
       private static bool CheckAddressFilter(bool applyAddressFilter, IPAddress filterAddress,

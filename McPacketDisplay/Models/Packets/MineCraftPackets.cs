@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using McPacketDisplay.ViewModels;
 using PacketDotNet;
 
 namespace McPacketDisplay.Models.Packets
@@ -9,31 +10,32 @@ namespace McPacketDisplay.Models.Packets
    {
       private readonly List<IMineCraftPacket> _packets;
 
-      private MineCraftPackets(IMineCraftProtocol protocol, NetworkStream strm)
+      private MineCraftPackets(IMineCraftProtocol protocol, IFilterTcpPackets filter, NetworkStream strm)
       {
          _packets = new List<IMineCraftPacket>();
          int packetNumber = 1;
          IMineCraftPacket packet;
          do
          {
-            packet = MineCraftPacket.GetPacket(packetNumber, protocol, strm);
+            PacketSource packetSource = filter.GetPacketSource(strm.CurrentTcpPacket);
+            packet = MineCraftPacket.GetPacket(packetNumber, protocol, packetSource, strm);
             if (packet is not null)
                _packets.Add(packet);
             packetNumber++;
-         } while (packet is not null);
+         } while (strm.Position < strm.Length);
       }
 
-      public static MineCraftPackets GetPackets(IMineCraftProtocol protocol, string filename)
+      public static MineCraftPackets GetPackets(IMineCraftProtocol protocol, IFilterTcpPackets filter, string filename)
       {
          TcpPacketList tcpPackets = TcpPacketList.GetList(filename);
          using (NetworkStream strm = new NetworkStream(tcpPackets))
-            return new MineCraftPackets(protocol, strm);
+            return new MineCraftPackets(protocol, filter, strm);
       }
 
-      public static MineCraftPackets GetPackets(IMineCraftProtocol protocol, IEnumerable<ITcpPacket> tcpPackets)
+      public static MineCraftPackets GetPackets(IMineCraftProtocol protocol, IFilterTcpPackets filter, IEnumerable<ITcpPacket> tcpPackets)
       {
          using (NetworkStream strm = new NetworkStream(tcpPackets))
-            return new MineCraftPackets(protocol, strm);
+            return new MineCraftPackets(protocol, filter, strm);
       }
 
       public IEnumerator<IMineCraftPacket> GetEnumerator()
