@@ -28,7 +28,7 @@ namespace McPacketDisplay.ViewModels
          _applyServerAddressFilter = false;
 
          _serverPort = 25565;
-         _applyServerPortFilter = false;
+         _applyServerPortFilter = true;
 
          _clientAddress = IPAddress.Loopback;
          _applyClientAddressFilter = false;

@@ -47,7 +47,7 @@
       </TextBlock>
       <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ServerAddress, Converter={StaticResource IPConverter}}" />
 
-      <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ApplyServerPortFilter}}" />
+      <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding ApplyServerPortFilter}}" IsEnabled="false" />
       <TextBlock Grid.Row="2" Grid.Column="2">
          Server Port:
       </TextBlock>
