@@ -33,7 +33,7 @@
         <MenuItem Header="_File">
           <MenuItem Header="_Open..." Command="{Binding OpenCommand}" />
           <Separator />
-          <MenuItem Header="_Quit" />
+          <MenuItem Header="_Quit" Click="HandleExit" />
         </MenuItem>
       </Menu>
 

@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
 namespace McPacketDisplay.Views
@@ -18,5 +19,10 @@ namespace McPacketDisplay.Views
         {
             AvaloniaXamlLoader.Load(this);
         }
-    }
+
+       private void HandleExit(object? sender, RoutedEventArgs e)
+       {
+           this.Close();
+       }
+   }
 }
