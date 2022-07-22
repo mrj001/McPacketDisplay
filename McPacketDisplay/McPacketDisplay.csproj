@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -18,11 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.8" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.8" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.8" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.8" />
-    <PackageReference Include="DynamicData" Version="7.4.1" />
-    <PackageReference Include="SharpPcap" Version="6.1.0" />
+    <PackageReference Include="Avalonia" Version="0.10.17" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.17" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.17" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.17" />
+    <PackageReference Include="DynamicData" Version="7.9.7" />
+    <PackageReference Include="SharpPcap" Version="6.2.1" />
   </ItemGroup>
 </Project>
